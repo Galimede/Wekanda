@@ -14,7 +14,7 @@ const router_tags = require('./routes/tags');
 
 const pool = require('./data/pg');
 const fileUpload = require('express-fileupload');
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 5000;
 
 app
     .use(morgan('combined'))

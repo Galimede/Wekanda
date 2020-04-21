@@ -1,7 +1,9 @@
-const express = require("express");
+const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 const app = express();
 
 const router_answers = require('./routes/answers');
@@ -16,6 +18,20 @@ const pool = require('./data/pg');
 const fileUpload = require('express-fileupload');
 const port = process.env.PORT || 5000;
 
+// Extends : https://swagger.io/specification/#infoObject
+const options = {
+    swaggerDefinition : {
+        info: {
+            title: 'Wekanda Quizz API',
+            version: '0.1',
+            description: 'Wekanda Quizz API documentation'
+        },
+    },
+    apis: ['./routes/answers.js'],
+};
+const specs = swaggerJsDoc(options);
+
+
 app
     .use(morgan('combined'))
     .use(cors())
@@ -23,9 +39,6 @@ app
     .use(bodyParser.urlencoded({
         extended: true
     }))
-
-    .get('/', (req, res) => res.send({ message: 'Welcome to Wekenda Quizz API' }))
-
     .use('/quizzes', router_quizzes)
     .use('/questions', router_questions)
     .use('/answers', router_answers)
@@ -33,9 +46,9 @@ app
     .use('/scores', router_scores)
     .use('/tagsquizzes', router_tags_quizzes)
     .use('/tags', router_tags)
-
+    .use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
     .use(express.static(__dirname + '/public'))
-
+    .get('/', (req, res) => res.send({ message: 'Welcome to Wekenda Quizz API' }))
     .get('/test_db', async (req, res) => {
        const result = await pool.query('SELECT NOW()');
        res.send(result.rows);

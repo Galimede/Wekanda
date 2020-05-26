@@ -9,8 +9,7 @@ import Profile from './components/Profile';
 import Play from './components/Play';
 import FilterQuizz from './components/FilterQuizz';
 import ShowQuestions from './components/ShowQuestions';
-import EditQuestion from './components/EditQuestion';
-import AddQuestion from './components/AddQuestion';
+import FormQuestion from './components/FormQuestions';
 import FormQuizz from './components/FormQuizz';
 
 function App() {
@@ -30,8 +29,8 @@ function App() {
                 <Route exact={true} path='/quizzes/:tag' component={FilterQuizz}  />
                 <Route exact={true} path='/quizz/:id_quizz/play' component={Play}/>
                 <Route exact={true} path='/questions/:id_quizz/edit' component={ShowQuestions}/>
-                <Route exact={true} path='/questions/:id_quizz/edit/:id_question' component={EditQuestion}/>
-                <Route exact={true} path='/questions/:id_quizz/addQuestion' component={AddQuestion}/>
+                <Route exact={true} path='/questions/:id_quizz/edit/:id_question' component={FormQuestion}/>
+                <Route exact={true} path='/questions/:id_quizz/addQuestion' component={FormQuestion}/>
 
                 <Redirect from='*' to='/' />
               </Switch>

@@ -6,6 +6,15 @@
     left: 0;
 }
 
-.chips .input {
+#title, .select-wrapper, .select-wrapper input.select-dropdown, #description, .chips .input{
     color : white;
+    width : 300px;
+}
+
+div {
+    text-align: center;
+}
+
+#div-questions{
+    margin-top : 2%;
 }

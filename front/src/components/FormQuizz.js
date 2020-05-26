@@ -103,7 +103,7 @@ export default function FormQuizz(props) {
     return (
         <div id='form-quizz-container'>
 
-            {quizz ? <h3>{quizz.title}</h3>: false}
+            {edit ? <h3>{quizz.title}</h3> : <h3>Créer votre quizz !</h3>}
 
             <form onSubmit={event => sendResquest(event)} encType="multipart/form-data">
 
@@ -181,7 +181,7 @@ export default function FormQuizz(props) {
             </form>
 
             {edit ?
-                <div id="div-questions" className="questions">
+                <div id="div-questions">
                     <a href={`/questions/${id_quizz}/edit`} className="waves-effect waves-light btn-large">Modifier les questions</a>
                 </div>
                 : false

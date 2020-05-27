@@ -14,6 +14,7 @@ export default function FormQuizz(props) {
     const { id_quizz } = useParams();
     const [quizz, setQuizz] = useState({});
     const [edit, setEdit] = useState(false);
+    const [tags, setTags] = useState({});
 
     async function getQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
@@ -22,12 +23,26 @@ export default function FormQuizz(props) {
             });
     }
 
+    async function getTags() {
+        await axios.get(`http://${config.server}/tags/`)
+            .then((res) => {
+                let dataTag = {};
+                (res.data).forEach(tag => {
+                    dataTag[tag.tag] = null;
+                })
+                setTags(dataTag);
+            });
+    }
+
     useEffect(() => {
         if(id_quizz !== undefined){
             setEdit(true);
             getQuizz();
+            getTags();
         }
     }, [])
+
+    console.log(tags)
 
     function uniqueName(filename) {
         if(filename){
@@ -48,7 +63,7 @@ export default function FormQuizz(props) {
         let file = null;
         let difficulty = event.target.difficulty.value;
         let description = event.target.description.value;
-        let tags = [];
+        let tagsSoumis = []
 
         if(event.target.difficulty.value !== ''){
             difficulty = event.target.difficulty.value;
@@ -63,21 +78,35 @@ export default function FormQuizz(props) {
         }
         
         if(document.getElementById("file").files[0]){
-            console.log('FILE COND')
             file = document.getElementById("file").files[0];
             console.log(file)
             pathFile = uniqueName(file.name);
         }
 
-        let tabTags = document.getElementById("tags").M_Chips.chipsData;
+        let tabTags = document.getElementById("tags").M_Chips.chipsData;        
         if(tabTags.length > 0){
             tabTags.forEach(
-                elt => tags.push(elt.tag)
+                elt => tagsSoumis.push(elt.tag)
             )
         }
         else{
             return alert("Entrez au moins un tag s'il vous plait !");
         }
+
+        tagsSoumis.forEach(tag => {
+            if(tag in tags === false){
+                // on .post le tag
+                axios.post(`http://${config.server}/tags/`, {
+                    'tagname' : tag
+                });
+                if(edit){
+                    axios.post(`http://${config.server}/tagsquizzes/`, {
+                        'id_quizz' : id_quizz,
+                        'tag' : tag
+                    });
+                }
+            }
+        })
         
         let bodyFormData = new FormData();
         if(!edit){
@@ -87,12 +116,11 @@ export default function FormQuizz(props) {
         bodyFormData.set('path_file', pathFile);
         bodyFormData.set('difficulty', difficulty);
         bodyFormData.set('description', description);
-        //bodyFormData.set('tags', tags);
         bodyFormData.append('file', file);
 
         if(edit){
             await axios.patch(`http://${config.server}/quizzes/${id_quizz}`, bodyFormData);
-            window.location.reload();
+            //window.location.reload();
         }
         else{
             await axios.post(`http://${config.server}/quizzes/`, bodyFormData);
@@ -158,11 +186,7 @@ export default function FormQuizz(props) {
                             closeIcon={<Icon className="close">close</Icon>}
                             options={{
                                 autocompleteOptions: {
-                                    data: {
-                                        Apple: null,
-                                        Google: null,
-                                        Microsoft: null
-                                    },
+                                    data: tags,
                                     limit: Infinity,
                                     minLength: 3,
                                     onAutocomplete: function noRefCheck() { }

@@ -58,7 +58,7 @@ router
         })
 
     .patch('/:id',
-    upload.single('file'), async (req, res) => {
+    upload.single('fileQuestion'), async (req, res) => {
 
         let result = undefined;
 

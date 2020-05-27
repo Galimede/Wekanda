@@ -18,7 +18,7 @@ export default function FormQuizz(props) {
     async function getQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
             .then((res) => {              
-                setQuizz(res.data[0]);
+                setQuizz(res.data);
             });
     }
 

@@ -23,14 +23,14 @@ export default function EditQuestion() {
     async function getQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
             .then(res => {
-                setQuizz(res.data[0]);
+                setQuizz(res.data);
             });
     }
 
     async function getQuestion(){
         await axios.get(`http://${config.server}/questions/${id_question}`)
             .then(res => {
-                setQuestion(res.data[0]);
+                setQuestion(res.data);
             });
     }
 
@@ -267,20 +267,20 @@ export default function EditQuestion() {
             }
 
             // on .patch la question si elle a changé
-            if (question !== '' || fileQuestion !== null) {
+            if (ques !== '' || fileQuestion !== null) {
 
                 let data = new FormData();
                 if (fileQuestion === null) {
-                    data.set('question', question);
+                    data.set('question', ques);
                 }
-                else if (question === '') {
+                else if (ques === '') {
                     let nameFile = uniqueName(fileQuestion.name);
                     data.set('path_file', nameFile);
                     data.append('fileQuestion', fileQuestion);
                 }
                 else {
                     let nameFile = uniqueName(fileQuestion.name);
-                    data.set('question', question);
+                    data.set('question', ques);
                     data.set('path_file', nameFile);
                     data.append('fileQuestion', fileQuestion);
                 }

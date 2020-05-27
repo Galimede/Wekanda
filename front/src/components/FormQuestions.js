@@ -2,11 +2,14 @@ import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import config from '../config';
-import { Select, Chip, Icon, TextInput, Checkbox } from 'react-materialize';
+import { TextInput, Checkbox } from 'react-materialize';
 import ReactPlayer from 'react-player';
 import './css/formQuestion.css';
 
 export default function EditQuestion() {
+
+    //nombre de réponses max
+    const TAILLE_MAX = 4;
 
     const { id_quizz, id_question } = useParams();
     let add = false;
@@ -60,70 +63,58 @@ export default function EditQuestion() {
         }
     }
 
-    function reponsesJSX(answers){
-        return answers.map((answer, idx) => {
-            let cb;
-            let correct = answer.correct;
-            tabCorrect.push(correct);
-            if(correct === true){
-                cb = <Checkbox label="Correct" id={`checked${idx}`} checked></Checkbox>
+    function reponsesJSX(answers) {
+          
+        let cb;
+        let nbrAnswers = answers.length;
+        let form = []; 
+        let correct = false;
+        for(let i=0; i<TAILLE_MAX; i++){
+            cb = <Checkbox label="Correct" id={`checked${i}`}></Checkbox>      
+            if(i<nbrAnswers){           
+                correct = answers[i].correct;
+                if(correct === true){
+                    cb = <Checkbox label="Correct" id={`checked${i}`} checked></Checkbox>
+                }
+                tabCorrect.push(correct);
             }
-            else{
-                cb = <Checkbox label="Correct" id={`checked${idx}`}></Checkbox>
-            }
-            return(
-                <div key={idx}>
+            form.push(
+                <div key={i}>
                     <div className="col s12">
-                        <span className="label-rep">Reponse {idx + 1} : </span>
-                        <input id={`reponse${idx}`} type="text" className="validate" placeholder={answer.answer} />
+                        <div className="input-field inline">
+                            <TextInput
+                                id={`reponse${i}`}
+                                label={'Réponse ' + (i+1)}
+                                placeholder={answers[i] !== undefined ? answers[i].answer : 'Example'}
+                            />
+                        </div>
                         {cb}
                     </div>
-                    {answer.path_file ? showMedia(answer) : false}
-                    <div className="input-field inline">
-                        <div className="file-field input-field">
-                            <div className="btn">
-                                <span>File</span>
-                                <input id={`fileAnswer${idx}`} type="file" name="fileAnswer"/>
-                            </div>
-                            <div className="file-path-wrapper">
-                                <input id={`fileNameAnswer${idx}`} className="file-path validate" type="text"/>
-                            </div>
+                
+                    {answers[i] !== undefined ? showMedia(answers[i]) : ''}
+
+                    <div className="col s12">
+                        <div className="input-field inline">
+                            <TextInput
+                                id={`fileAnswer${i}`}
+                                label="File"
+                                type="file"
+                                name="fileAnswer"
+                            />
                         </div>
                     </div>
                 </div>
-                
-            )
-        })
-    }
- 
-    let eventuelReponsesJSX = [];
-    for (let i = answers.length; i < 4; i++) {
-        eventuelReponsesJSX.push(<div key={i} className="col s12">
-            <div>
-                <span className="label-rep">Reponse {i + 1} : </span>
-                <input id={`reponse${i}`} type="text" className="validate" placeholder={"Exemple de réponse"} />
-                <Checkbox label="Correct" id={`checked${i}`}></Checkbox>
-            </div>
-            
-            <div className="input-field inline">
-                <div className="file-field input-field">
-                    <div className="btn">
-                        <span>File</span>
-                        <input id={`fileAnswer${i}`} type="file" name="fileAnswer"/>
-                    </div>
-                    <div className="file-path-wrapper">
-                        <input id={`fileNameAnswer${i}`} className="file-path validate" type="text" />
-                    </div>
-                </div>
-            </div>
-        </div>
-        );
+            )          
+        }
+        return form;
     }
 
     function showMedia(q){
         if(q.path_file !== ''){
+
             let splitType = q.path_file.split('.');
             let type = splitType[splitType.length-1];
+
             if(type === 'mp4'){
                 return (
                     <div id="div-media">
@@ -145,15 +136,11 @@ export default function EditQuestion() {
                 )
             }
         }
-        else{
-            return false;
-        }
     }
 
     async function sendRequest(event){
         event.preventDefault();
         
-
         let ques = event.target.formQuestion.value;
         let fileQuestion = null;
 
@@ -192,7 +179,7 @@ export default function EditQuestion() {
             let tabCb = [];
             let tabReponses = [];
             let tabFichiersReponses = [];
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < TAILLE_MAX; i++) {
                 tabCb.push(document.getElementById("checked" + i).checked);
                 tabReponses.push(document.getElementById("reponse" + i).value);
                 let fichier = document.getElementById("fileAnswer" + i).files[0];
@@ -203,8 +190,6 @@ export default function EditQuestion() {
                     tabFichiersReponses.push(null);
                 }
             }
-
-            console.log(tabCb, tabReponses, tabFichiersReponses);
 
             // Si aucune réponse n'est cochée comme correcte, on informe l'user
             if (tabCb[0] === false && tabCb[1] === false && tabCb[2] === false && tabCb[3] === false) {
@@ -230,14 +215,13 @@ export default function EditQuestion() {
                         data.set('path_file', nameFile);
                         data.append('fileAnswer', tabFichiersReponses[i]);
                     }
-                    console.log(data.get('fileAnswer'));
 
                     await axios.patch(`http://${config.server}/answers/${id_answer}`, data);
                 }
             }
 
             // on .post les éventuelles nouvelles réponses
-            for (let i = answers.length; i < 4; i++) {
+            for (let i = answers.length; i < TAILLE_MAX; i++) {
                 if (tabReponses[i] !== '' || tabFichiersReponses[i] !== null) {
                     let data = new FormData();
 
@@ -252,7 +236,7 @@ export default function EditQuestion() {
                     }
 
                     if (tabFichiersReponses[i] !== null) {
-                        let nameFile = uniqueName(document.getElementById('fileNameAnswer'+i).value);
+                        let nameFile = uniqueName(tabFichiersReponses[i].name);
                         data.set('path_file', nameFile);
                         data.append('fileAnswer', tabFichiersReponses[i]);
                     }
@@ -313,13 +297,12 @@ export default function EditQuestion() {
                 <div className="col s12">
                     <div className="input-field inline">
                         <div className="file-field input-field">
-                            <div className="btn">
-                                <span>File</span>
-                                <input id="fileQuestion" type="file"/>
-                            </div>
-                            <div className="file-path-wrapper">
-                                <input id="fileNameQuestion" className="file-path validate" type="text" />
-                            </div>
+                            <TextInput
+                            id="fileQuestion"
+                            label="File"
+                            type="file"
+                            name="fileQuestion"
+                            />
                         </div>
                     </div>
                 </div>
@@ -327,9 +310,8 @@ export default function EditQuestion() {
                 {!add ? 
                     <div id="div-reponse">
                         {reponsesJSX(answers)}
-                        {eventuelReponsesJSX}
                     </div>
-                    : false
+                    : ''
                 }
 
                 <div id="div-confirmer" className="col s12">

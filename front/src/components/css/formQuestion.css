@@ -1,5 +1,9 @@
-#formQuestion, #reponse0, #reponse1, #reponse2, #reponse3 {
-    width : 300px;
+#formQuestion {
+    width : 500px;
+}
+
+#reponse0, #reponse1, #reponse2, #reponse3 {
+    width : 390px;
 }
 
 #div-media{

@@ -1,6 +1,7 @@
 const pool = require('../data/pg.js');
 const express = require('express');
 const router = express.Router();
+<<<<<<< Updated upstream
 const multer = require('multer');
 
 
@@ -16,6 +17,9 @@ let storage = multer.diskStorage(
 
 
 let upload = multer({ storage: storage });
+=======
+const upload = require('../tools/multer_config');
+>>>>>>> Stashed changes
 
 router
     .get('/', async (req, res) => {

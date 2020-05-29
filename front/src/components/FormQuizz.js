@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../config';
 import { Select, Chip, Icon, TextInput } from 'react-materialize';
+import ReactPlayer from 'react-player';
 import './css/formQuizz.css';
 
 export default function FormQuizz(props) {
@@ -15,6 +16,7 @@ export default function FormQuizz(props) {
     const [quizz, setQuizz] = useState({});
     const [edit, setEdit] = useState(false);
     const [tags, setTags] = useState({});
+    const [tagsQuizz, setTagsQuizz] = useState([]);
 
     async function getQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
@@ -34,15 +36,33 @@ export default function FormQuizz(props) {
             });
     }
 
+    async function getTagsQuizz() {
+        await axios.get(`http://${config.server}/tagsquizzes/${id_quizz}`)
+            .then((res) => {   
+                let tagQuizz = [];
+                (res.data).forEach( obj => {
+                    tagQuizz.push(obj.tag)
+                })
+                setTagsQuizz(tagQuizz);
+            });
+    }
+
+    async function postTag(req){
+        await axios.post(`http://${config.server}/tags/`, req);
+    }
+
+    async function postTagQuizz(req){
+        await axios.post(`http://${config.server}/tagsquizzes/`, req);
+    }
+
     useEffect(() => {
+        getTags();
         if(id_quizz !== undefined){
             setEdit(true);
             getQuizz();
-            getTags();
+            getTagsQuizz();
         }
     }, [])
-
-    console.log(tags)
 
     function uniqueName(filename) {
         if(filename){
@@ -55,6 +75,37 @@ export default function FormQuizz(props) {
         }
     }
 
+    function showMedia(q){
+        if(q.path_file !== undefined){
+            if(q.path_file !== ''){
+
+                let splitType = q.path_file.split('.');
+                let type = splitType[splitType.length-1];
+    
+                if(type === 'mp4'){
+                    return (
+                        <div id="div-media">
+                            <ReactPlayer 
+                            id='player' 
+                            controls={true}
+                            volume={0.5}
+                            wrapper='div-media'
+                            url={`http://${config.server}/video/${q.path_file}`}
+                            />
+                        </div>
+                    )
+                }
+                else{
+                    return (
+                        <div id="div-media">
+                            <img src={`http://${config.server}/img/${q.path_file}`} alt={`${q.path_file}`}></img>
+                        </div>
+                    )
+                }
+            }
+        }
+    }
+
     async function sendResquest(event){
         event.preventDefault();
 
@@ -63,7 +114,6 @@ export default function FormQuizz(props) {
         let file = null;
         let difficulty = event.target.difficulty.value;
         let description = event.target.description.value;
-        let tagsSoumis = []
 
         if(event.target.difficulty.value !== ''){
             difficulty = event.target.difficulty.value;
@@ -73,41 +123,46 @@ export default function FormQuizz(props) {
             return alert("Entrez un titre 'il vous plait !")
         }
 
-        if(difficulty === ''){
+        if(difficulty === '' && !edit){
             return alert("Choississez une difficulté s'il vous plait !")
         }
         
         if(document.getElementById("file").files[0]){
             file = document.getElementById("file").files[0];
-            console.log(file)
             pathFile = uniqueName(file.name);
         }
 
-        let tabTags = document.getElementById("tags").M_Chips.chipsData;        
-        if(tabTags.length > 0){
-            tabTags.forEach(
-                elt => tagsSoumis.push(elt.tag)
-            )
+        // On récupère les tags
+        let tagRecup = [];
+        (document.getElementById("tags").M_Chips.chipsData).forEach( obj => {
+            tagRecup.push(obj.tag);
+        })
+        let tagDelete = [];
+        let tagAssocieQuizz = [];
+        // Si on a récupéré des tags
+        if (tagRecup.length > 0) {
+            console.log('tag du quizz : ', tagsQuizz);
+            console.log('tags récupérés : ', tagRecup);
+            tagsQuizz.forEach( tag => {
+                console.log('=== DELETE ===')
+                console.log(tag)
+                if((tag in tagRecup) === false){
+                    tagDelete.push(tag);
+                }
+            })
         }
         else{
-            return alert("Entrez au moins un tag s'il vous plait !");
+            if(!edit){
+                return alert("Entrez au moins un tag s'il vous plait !");
+            }
         }
 
-        tagsSoumis.forEach(tag => {
-            if(tag in tags === false){
-                // on .post le tag
-                axios.post(`http://${config.server}/tags/`, {
-                    'tagname' : tag
-                });
-                if(edit){
-                    axios.post(`http://${config.server}/tagsquizzes/`, {
-                        'id_quizz' : id_quizz,
-                        'tag' : tag
-                    });
-                }
-            }
-        })
-        
+        // On supprime les tags à supprimer
+        console.log('Tags à supprimer : ', tagDelete);
+
+        // On .post tagQuizz (associer tag et quizz)
+        console.log('Tags à lier : ', tagAssocieQuizz);
+
         let bodyFormData = new FormData();
         if(!edit){
             bodyFormData.set('id_creator', id_user);
@@ -119,7 +174,9 @@ export default function FormQuizz(props) {
         bodyFormData.append('file', file);
 
         if(edit){
-            await axios.patch(`http://${config.server}/quizzes/${id_quizz}`, bodyFormData);
+            if(title !== '' && pathFile !== '' && difficulty !== '' && description !== '' && file !== null){
+                await axios.patch(`http://${config.server}/quizzes/${id_quizz}`, bodyFormData);
+            }
             //window.location.reload();
         }
         else{
@@ -144,6 +201,10 @@ export default function FormQuizz(props) {
                         />
                     </div>
                 </div>
+
+                {edit ? showMedia(quizz)
+                    : ''
+                }
 
                 <div id="div-file" className="col s12">
                     <div className="input-field inline">
@@ -173,7 +234,7 @@ export default function FormQuizz(props) {
                             data-length={140}
                             id="description"
                             label="Description"
-                            placeholder={edit ? quizz.description : undefined}
+                            placeholder={edit ? quizz.description : ''}
                         />
                     </div>
                 </div>

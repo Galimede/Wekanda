@@ -18,6 +18,7 @@ export default function FormQuizz(props) {
     const [tagsDB, setTagsDB] = useState([]);
     const [tagsChips, setTagsChips] = useState({});
     const [tagsQuizz, setTagsQuizz] = useState([]);
+    const [tagsQuizzChips, setTagsQuizzChips] = useState([]);
 
     async function getQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
@@ -44,10 +45,13 @@ export default function FormQuizz(props) {
         await axios.get(`http://${config.server}/tagsquizzes/${id_quizz}`)
             .then((res) => {   
                 let tagQuizz = [];
+                let tagQuizzChips = [];
                 (res.data).forEach( obj => {
                     tagQuizz.push(obj.tag)
+                    tagQuizzChips.push({ tag : obj.tag});
                 })
                 setTagsQuizz(tagQuizz);
+                setTagsQuizzChips(tagQuizzChips);
             });
     }
 
@@ -150,18 +154,38 @@ export default function FormQuizz(props) {
         let tagAssocieQuizz = [];
         // Si on a récupéré des tags
         if (tagRecup.length > 0) {
+            // Pour chaque tag lié au quizz
             tagsQuizz.forEach( tag => {
+                // s'il n'est pas dans les tags récupéré, on le délie
                 if(tagRecup.includes(tag) === false){
                     deleteTag(tag);
                 }
             })
-            tagRecup.forEach( tag => {
+            // pour chaque tag récupéré
+            tagRecup.forEach( async tag => {
+                // s'il n'est pas dans la db, on l'ajoute à la db
                 if(tagsDB.includes(tag) === false){
                     let t = {
                         'tagname' : tag
                     }
-                    postTag(t);
-                    tagAssocieQuizz.push(tag);
+                    await postTag(t);
+                    // On lie le tag au quizz
+                    let req = {
+                        'id_quizz' : id_quizz,
+                        'tag' : tag
+                    }
+                    await postTagQuizz(req);
+                }
+                else{
+                    // S'il est déja dans le db et qu'il n'est pas lié au quizz
+                    if(tagsQuizz.includes(tag) === false){
+                        // on le lie au quizz
+                        let req = {
+                            'id_quizz' : id_quizz,
+                            'tag' : tag
+                        }
+                        await postTagQuizz(req);
+                    }                  
                 }
             })
         }
@@ -169,18 +193,7 @@ export default function FormQuizz(props) {
             if(!edit){
                 return alert("Entrez au moins un tag s'il vous plait !");
             }
-        }
-
-        // On .post tagQuizz (associer tag et quizz)
-        console.log('Tags à lier : ', tagAssocieQuizz);
-        tagAssocieQuizz.forEach( tag => {
-            let req = {
-                'id_quizz' : id_quizz,
-                'tag' : tag
-            }
-            postTagQuizz(req)
-        })
-        
+        }       
 
         let bodyFormData = new FormData();
         if(!edit){
@@ -253,7 +266,7 @@ export default function FormQuizz(props) {
                             data-length={140}
                             id="description"
                             label="Description"
-                            placeholder={edit ? quizz.description : ''}
+                            placeholder={edit ? quizz.description : undefined}
                         />
                     </div>
                 </div>
@@ -265,6 +278,7 @@ export default function FormQuizz(props) {
                             close={false}
                             closeIcon={<Icon className="close">close</Icon>}
                             options={{
+                                data: tagsQuizzChips,
                                 autocompleteOptions: {
                                     data: tagsChips,
                                     limit: Infinity,
@@ -274,9 +288,7 @@ export default function FormQuizz(props) {
                                 placeholder: 'Enter a tag',
                                 secondaryPlaceholder: '+Tag'
                             }}
-                        >
-                            Test
-                        </Chip>
+                        />
                     </div>
                 </div>
 

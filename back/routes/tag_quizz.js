@@ -16,10 +16,16 @@ router
             res.status(200);
         })
 
-    .post("/", 
-        async (req,res) => {
-            const result = await pool.query("INSERT INTO tagquizz(id_quizz, tag) values($1,$2)", [req.body.id_quizz,req.body.tag]);
+    .post("/",
+        async (req, res) => {
+            const result = await pool.query("INSERT INTO tagQuizz(id_quizz, tag) values($1,$2)", [req.body.id_quizz, req.body.tag]);
             res.status(201).end();
+        })
+
+    .delete('/:id_quizz/:tag',
+        async (req, res) => {
+            await pool.query('DELETE FROM tagQuizz WHERE id_quizz=$1 AND tag=$2', [req.params.id_quizz, req.params.tag]);
+            res.status(204).end();
         });
 
 module.exports = router;

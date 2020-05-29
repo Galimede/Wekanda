@@ -15,7 +15,8 @@ export default function FormQuizz(props) {
     const { id_quizz } = useParams();
     const [quizz, setQuizz] = useState({});
     const [edit, setEdit] = useState(false);
-    const [tags, setTags] = useState({});
+    const [tagsDB, setTagsDB] = useState([]);
+    const [tagsChips, setTagsChips] = useState({});
     const [tagsQuizz, setTagsQuizz] = useState([]);
 
     async function getQuizz() {
@@ -29,10 +30,13 @@ export default function FormQuizz(props) {
         await axios.get(`http://${config.server}/tags/`)
             .then((res) => {
                 let dataTag = {};
+                let db = [];
                 (res.data).forEach(tag => {
                     dataTag[tag.tag] = null;
+                    db.push(tag.tag);
                 })
-                setTags(dataTag);
+                setTagsChips(dataTag);
+                setTagsDB(db);
             });
     }
 
@@ -54,6 +58,11 @@ export default function FormQuizz(props) {
     async function postTagQuizz(req){
         await axios.post(`http://${config.server}/tagsquizzes/`, req);
     }
+
+    async function deleteTag(tagname){
+        await axios.delete(`http://${config.server}/tagsquizzes/${id_quizz}/${tagname}`);
+    }
+    
 
     useEffect(() => {
         getTags();
@@ -137,17 +146,22 @@ export default function FormQuizz(props) {
         (document.getElementById("tags").M_Chips.chipsData).forEach( obj => {
             tagRecup.push(obj.tag);
         })
-        let tagDelete = [];
+
         let tagAssocieQuizz = [];
         // Si on a récupéré des tags
         if (tagRecup.length > 0) {
-            console.log('tag du quizz : ', tagsQuizz);
-            console.log('tags récupérés : ', tagRecup);
             tagsQuizz.forEach( tag => {
-                console.log('=== DELETE ===')
-                console.log(tag)
-                if((tag in tagRecup) === false){
-                    tagDelete.push(tag);
+                if(tagRecup.includes(tag) === false){
+                    deleteTag(tag);
+                }
+            })
+            tagRecup.forEach( tag => {
+                if(tagsDB.includes(tag) === false){
+                    let t = {
+                        'tagname' : tag
+                    }
+                    postTag(t);
+                    tagAssocieQuizz.push(tag);
                 }
             })
         }
@@ -157,11 +171,16 @@ export default function FormQuizz(props) {
             }
         }
 
-        // On supprime les tags à supprimer
-        console.log('Tags à supprimer : ', tagDelete);
-
         // On .post tagQuizz (associer tag et quizz)
         console.log('Tags à lier : ', tagAssocieQuizz);
+        tagAssocieQuizz.forEach( tag => {
+            let req = {
+                'id_quizz' : id_quizz,
+                'tag' : tag
+            }
+            postTagQuizz(req)
+        })
+        
 
         let bodyFormData = new FormData();
         if(!edit){
@@ -247,15 +266,17 @@ export default function FormQuizz(props) {
                             closeIcon={<Icon className="close">close</Icon>}
                             options={{
                                 autocompleteOptions: {
-                                    data: tags,
+                                    data: tagsChips,
                                     limit: Infinity,
                                     minLength: 3,
-                                    onAutocomplete: function noRefCheck() { }
+                                    onAutocomplete: function noRefCheck() {}
                                 },
                                 placeholder: 'Enter a tag',
                                 secondaryPlaceholder: '+Tag'
                             }}
-                        />
+                        >
+                            Test
+                        </Chip>
                     </div>
                 </div>
 

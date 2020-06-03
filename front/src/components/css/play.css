@@ -14,7 +14,6 @@
     right: 5%;
 }
 
-
 #score>h2{
     font-size: 2em;
 }
@@ -60,7 +59,7 @@
     filter: brightness(1);
 }
 
-.answer>h2{
+.answer>span{
     font-size: 2em;
 }
 
@@ -79,6 +78,19 @@
 
 #answer3{background-color: #40A3FF;}
 
-#next-button,#finish-button{
+#next-button, #finish-button{
+    margin-top: 1%;
     visibility: hidden;
+}
+
+#finish-button{
+    margin-top: -62px;
+}
+
+#good, #bad{
+    visibility: hidden;
+}
+
+#bad{
+    margin-top: -22px;
 }

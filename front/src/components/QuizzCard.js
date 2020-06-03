@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import config from '../config';
-import { Icon, Button, Modal, Row, Col, Card, CardTitle } from 'react-materialize';
+import { Icon, Modal, Card, CardTitle } from 'react-materialize';
 import * as apiget from '../APIcalls/APIget';
 import './css/quizzcard.css';
 
@@ -44,32 +44,25 @@ export default function QuizzCard(props) {
 
     return (
         <div id='quizz-card-container'>
-            <Row>
-                <Col
-                    m={6}
-                    s={12}
-                >
-                    <Card
-                        id='quizz-card-card'
-                        actions={[
-                            <a key="1" href={`/quizz/${props.quizz.id_quizz}/play`}>Jouer</a>,
-                            <a key="2" href={`/quizz/${props.quizz.id_quizz}/edit`}>Modifier</a>,
-                            <Modal key='3' header={props.quizz.title} trigger={trigger}>
-                                <p>{displayDiff(props.quizz.difficulty)}</p>
-                                <p>Meilleur score : {scoreMax.maxi ? scoreMax.maxi : 'Pas encore de score !'}</p>
-                                <p>Meilleur joueur : </p>
-                            </Modal>
-                        ]}
-                        closeIcon={<Icon>close</Icon>}
-                        header={<CardTitle id='quizz-card-img' image={`http://${config.server}/img/${props.quizz.path_file}`} />}
-                        horizontal    
-                    >
-                        {props.quizz.description}
-                    </Card>
-                </Col>
-            </Row>
-        </div>
+            <Card
+                id='quizz-card-card'
+                actions={[
+                    <a key="1" href={`/quizz/${props.quizz.id_quizz}/play`}>Jouer</a>,
+                    <a key="2" href={`/quizz/${props.quizz.id_quizz}/edit`}>Modifier</a>,
+                    <Modal key='3' header={props.quizz.title} trigger={trigger}>
+                        <p>{displayDiff(props.quizz.difficulty)}</p>
+                        <p>Meilleur score : {scoreMax.maxi ? scoreMax.maxi : 'Pas encore de score !'}</p>
+                        <p>Meilleur joueur : </p>
+                    </Modal>
+                ]}
+                closeIcon={<Icon>close</Icon>}
+                header={<CardTitle id='quizz-card-img' image={`http://${config.server}/img/${props.quizz.path_file}`} />}
+                horizontal
+            >
+                {props.quizz.description}
+            </Card>
 
+        </div>
 
     );
 }

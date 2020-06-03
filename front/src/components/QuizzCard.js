@@ -1,36 +1,75 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import config from '../config';
+import { Icon, Button, Modal, Row, Col, Card, CardTitle } from 'react-materialize';
+import * as apiget from '../APIcalls/APIget';
 import './css/quizzcard.css';
-
 
 
 export default function QuizzCard(props) {
 
-    QuizzCard.defaultProps = {
-        width: 500
+    //Récupérer le score
+    const [scoreMax, setScoreMax] = useState({});
+    function getScore(id_quizz){
+        apiget.fetchScoreMax(id_quizz).then(res =>
+            setScoreMax(res),
+        );
     }
 
-    let height = 0.30 * props.width;
-    return (
+    //Il faut récupérer le joueur
 
-        <div className="col s12 m7" style = {{maxWidth: `${props.width}px`,height: `${height}px`,
-         marginBottom: '5%', marginLeft: '1%'}}>
-            <h4 className="header">{props.quizz.title}</h4>
-            <div className="card horizontal" >
-                <div className="card-image"  >
-                    <img style = {{height: `${height}px`, width: '150px'}} src={`http://${config.server}/img/${props.quizz.path_file}`} alt={`${props.quizz.path_file}`}/>
-                </div>
-                <div className="card-stacked">
-                    <div className="card-content">
-                        <p id='desc'>{props.quizz.description}</p>
-                    </div>
-                    <div className="card-action">
-                        <a href={`/quizz/${props.quizz.id_quizz}/play`}>Jouer</a>
-                        <a id='modify-quizz-button' href={`/quizz/${props.quizz.id_quizz}/edit`}>Modifier</a>
-                    </div>
-                </div>
-            </div>
+    function displayDiff(diff) {
+        let message = 'Niveau de quizz : ';
+        switch (diff) {
+            case 1:
+                message += "facile";
+                break;
+            case 2:
+                message += "moyenne";
+                break;
+            case 3:
+                message += "difficile";
+                break;
+
+            default:
+                message += "non renseignée";
+        }
+        return message;
+    }
+
+    useEffect(() => {
+        getScore(props.quizz.id_quizz);
+    }, []);
+
+    const trigger = <a href='#'>Infos</a>
+
+    return (
+        <div id='quizz-card-container'>
+            <Row>
+                <Col
+                    m={6}
+                    s={12}
+                >
+                    <Card
+                        id='quizz-card-card'
+                        actions={[
+                            <a key="1" href={`/quizz/${props.quizz.id_quizz}/play`}>Jouer</a>,
+                            <a key="2" href={`/quizz/${props.quizz.id_quizz}/edit`}>Modifier</a>,
+                            <Modal key='3' header={props.quizz.title} trigger={trigger}>
+                                <p>{displayDiff(props.quizz.difficulty)}</p>
+                                <p>Meilleur score : {scoreMax.maxi ? scoreMax.maxi : 'Pas encore de score !'}</p>
+                                <p>Meilleur joueur : </p>
+                            </Modal>
+                        ]}
+                        closeIcon={<Icon>close</Icon>}
+                        header={<CardTitle id='quizz-card-img' image={`http://${config.server}/img/${props.quizz.path_file}`} />}
+                        horizontal    
+                    >
+                        {props.quizz.description}
+                    </Card>
+                </Col>
+            </Row>
         </div>
+
 
     );
 }

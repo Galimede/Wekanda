@@ -24,7 +24,7 @@ export default function Play(){
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
                    .then(res => {
                     if (res.status === 200){
-                        setQuizz(res.data[0]);
+                        setQuizz(res.data);
                     }else{
                         setQuizz('not found');
                     }

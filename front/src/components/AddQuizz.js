@@ -90,7 +90,6 @@ export default function AddQuizz(props) {
                         </div>
                     </div>
                 </div>
-                {/* {props.quizz ? console.log(props.quizz) : ''} */}
                 <div className="col s12">
                     <div className="input-field inline" >
                         <label id="label-diff" htmlFor='difficulty'>Difficulty</label>

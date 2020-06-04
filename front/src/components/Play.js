@@ -6,6 +6,7 @@ import { Icon, Button, CardPanel} from 'react-materialize';
 import { Redirect } from 'react-router-dom';
 import PlayQuestion from './PlayQuestion';
 import './css/play.css';
+import * as apiget from '../APIcalls/APIget';
 
 export default function Play() {
     const { id_quizz } = useParams();
@@ -17,6 +18,8 @@ export default function Play() {
     const [currentidx, setCurrentidx] = useState(0);
 
     const [score, setScore] = useState(0);
+    const [scoreDB, setScoreDB] = useState(undefined);
+
 
     /* flag to make it impossible to answer the same Q several times */
     const [answered, setAnswered] = useState(false);
@@ -34,6 +37,7 @@ export default function Play() {
                 }
             });
     }
+
     async function fetchQuestions() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}/questions`)
             .then(res => {
@@ -49,7 +53,15 @@ export default function Play() {
             });
     }
 
+    async function fetchCurrentAnswers() {
+        await axios.get(`http://${config.server}/questions/${currentQuestion.id_question}/answers`)
+            .then(res => {
+                setCurrentAnswers(res.data);
+            });
+    }
+
     useEffect(() => {
+        //apiget.fetchScoreByQuizzAndUser(id_user, id_quizz).then(res => setScoreDB(res));
         fetchQuizz();
         fetchQuestions();
     }, [])

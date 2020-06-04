@@ -71,7 +71,16 @@ export async function fetchScoreMax(id) {
     return s;
 }
 
-export async function fetchJoueur(id) {
+export async function fetchScoreByQuizzAndUser(id_user, id_quizz) {
+    let s;
+    await axios.get(`http://${config.server}/scores/${id_user}/user/${id_quizz}/quizz`)
+        .then(res => {
+            s = (res.data);
+        });
+    return s;
+}
+
+export async function fetchUser(id) {
     let j;
     await axios.get(`http://${config.server}/users/${id}`)
         .then(res => {

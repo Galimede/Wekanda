@@ -8,6 +8,7 @@ router
             const result = await pool.query('SELECT * FROM score');
             res.json(result.rows);
         })
+        
     .get('/:id_quizz/max',
         async (req, res) => {
             const result = await pool.query('SELECT id_user, MAX(score) AS maxi FROM score WHERE id_quizz=$1 GROUP BY id_user', [req.params.id_quizz]);
@@ -34,6 +35,7 @@ router
             }
             res.json(result.rows);
         })
+
     .get('/:id_user/user/:id_quizz/quizz',
         async (req, res) => {
             let result = '';

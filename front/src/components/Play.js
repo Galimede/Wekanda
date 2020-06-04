@@ -21,6 +21,8 @@ export default function Play() {
     /* flag to make it impossible to answer the same Q several times */
     const [answered, setAnswered] = useState(false);
     const [chronoTermine, setChronoTermine] = useState(false);
+    const [sec, setSecond] = useState(5);
+    
 
     async function fetchQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
@@ -60,9 +62,14 @@ export default function Play() {
         if (currentQuestion) fetchCurrentAnswers();
     }, [currentQuestion]);
 
+    useEffect(() => {
+    }, [chronoTermine]);
+
     function handleAnswer(answer) {
-        setChronoTermine(true);
-        if (!answered) {
+        if (!answered && chronoTermine === false) {
+            console.log(sec)
+            setAnswered(true);
+            setChronoTermine(true);
             /* Checking if the user has answered correctly */
             if (answer.correct) {
                 setScore(parseInt(score) + 10);
@@ -74,19 +81,21 @@ export default function Play() {
             for (const i of document.querySelectorAll('.material-icons')) {
                 i.style.visibility = 'visible';
             }
-            setAnswered(true);
 
             /* Checking if the quizz is over */
-            if (currentidx < questions.length - 1) { document.querySelector('#next-button').style.visibility = 'visible'; }
-            else { document.querySelector('#finish-button').style.visibility = 'visible'; }
-        } else {
-
+            if (currentidx < questions.length - 1){
+                document.querySelector('#next-button').style.visibility = 'visible';
+            }
+            else{
+                //On post le score
+                document.querySelector('#finish-button').style.visibility = 'visible';
+            }
         }
     }
 
     function handleNext() {
-        //reset chrono
-        setChronoTermine(false);
+        console.log(answered)
+        console.log(chronoTermine)
         for (const i of document.querySelectorAll('.material-icons')) {
             i.style.visibility = 'hidden';
         }
@@ -95,8 +104,32 @@ export default function Play() {
         document.querySelector('#bad').style.visibility = 'hidden';
         setCurrentidx(parseInt(currentidx) + 1);
         setAnswered(false);
+        setChronoTermine(false);
+        setSecond(5);
     }
 
+    
+    let second = sec;
+    if(!chronoTermine){
+        //décompte
+        var countdown = setInterval(() => {
+            if(second > 0){
+                second--;
+                setSecond(second)
+            }
+            else{
+                console.log("Stop interval")
+                clearInterval(countdown);
+            } 
+        }, 1000)
+    }
+    else{
+        //On arrête le décompte
+        console.log('Ca tourne plus');
+        //clearInterval(countdown);
+    }
+    
+        
     return (
 
         <div id='play-container'>
@@ -110,6 +143,10 @@ export default function Play() {
 
             <div id='score'>
                 <h2>Score : {score ? score : 0}</h2>
+            </div>
+
+            <div id='chrono'>
+                {sec === 0 ? 'Terminé !' : 'Temps restant : ' + sec}
             </div>
 
             <div id='answers'>

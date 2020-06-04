@@ -14,6 +14,13 @@
     right: 5%;
 }
 
+#chrono{
+    position: absolute;
+    top: 0;
+    left: 5%;
+    font-size: 2em;
+}
+
 #score>h2{
     font-size: 2em;
 }

@@ -24,14 +24,14 @@ export default function AddQuizz(props) {
         let res = {
             title: e.target.title.value,
             difficulty: e.target.difficulty.value,
-            fileName: e.target.fileName.value,      
+            path_file: e.target.fileName.value,      
             description: e.target.description.value
         };
         if (e.target.file.files[0]){
             res.file = e.target.file.files[0];
-            console.log(e.target.file.files[0]);
+            // console.log(e.target.file.files[0]);
         }
-        console.log(res)
+        // console.log(res)
         props.onSubmitQuizz(res);
         
 
@@ -82,7 +82,7 @@ export default function AddQuizz(props) {
                         <div className="file-field input-field">
                             <div className="btn">
                                 <span>File</span>
-                                <input id="file" type="file" />
+                                <input id="file" type="file" onChange={e => { props.onChange() }} />
                             </div>
                             <div className="file-path-wrapper">
                                 <input onChange={e => { props.onChange() }} id="fileName" className="file-path validate" type="text" defaultValue={props.quizz ? props.quizz.path_file : ''} />
@@ -93,7 +93,7 @@ export default function AddQuizz(props) {
                 <div className="col s12">
                     <div className="input-field inline" >
                         <label id="label-diff" htmlFor='difficulty'>Difficulty</label>
-                        <Select onChange={e => {props.onChange();console.log('lele');}} id="difficulty" value={props.quizz ? props.quizz.difficulty : ''}>
+                        <Select onChange={e => {props.onChange();}} id="difficulty" value={props.quizz ? props.quizz.difficulty : ''}>
                             <option value='' disabled>Choose a difficulty</option>
                             <option value={1} >Facile</option>
                             <option value={2} >Moyen</option>

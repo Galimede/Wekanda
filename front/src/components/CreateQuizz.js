@@ -32,23 +32,14 @@ export default function CreateQuizz() {
         setIsSaved(true);
     }
     function onSubmitQuestion(q, a) {
-        console.log('ca c questions')
-        console.log(questions)
         let tmp = questions;
-        console.log('ca c tmp')
-        console.log(tmp)
         tmp[idxPage - 1] = q;
-        console.log(tmp)
         setQuestions(tmp);
-        tmp = [...answers];
+        tmp = answers;
+        // console.log(a)
         tmp[idxPage - 1] = a;
         setAnswers(tmp);
-        console.log('question :')
-
-        console.log(questions)
-        console.log('answers : ')
-
-        console.log(answers)
+        // console.log(answers)
         setIsSaved(true);
     }
 
@@ -70,22 +61,23 @@ export default function CreateQuizz() {
 
         } else {
             apipatch.updateQuizz(quizz);
-            console.log(Array.isArray(questions))
             for (const question of questions) {
                 if (question.id_quizz) {
                     apipatch.updateQuestion(question);
-                    console.log('on patch la ques')
                 } else {
-                    console.log('on post la ques')
                     apipost.sendQuestion(question);
                 }
             }
 
-            for (const answer of answers) {
-                if (answer.id_question) {
-                    apipatch.updateAnswer(answer);
-                } else {
-                    apipost.sendAnswer(answer);
+            for (const a of answers) {
+                for (const answer of a){
+                    if (answer.id_question) {
+                        console.log('on patch answer')
+                        apipatch.updateAnswer(answer);
+                    } else {
+                        console.log('on post answer')
+                        apipost.sendAnswer(answer);
+                    }
                 }
             }
         }
@@ -107,15 +99,15 @@ export default function CreateQuizz() {
 
     useEffect(() => {
         if (id_quizz) {
-            apiget.fetchQuizz(id_quizz).then(res => { console.log('recuuuup'); console.log(res); setQuizz(res); });
+            apiget.fetchQuizz(id_quizz).then(res => { setQuizz(res); });
             apiget.fetchQuestionsOfQuizz(id_quizz).then(res => {
                 setQuestions(res);
-                console.log(res);
-                console.log('a')
+                // console.log(res);
+                // console.log('a')
                 for (const question of res) {
-                    console.log('b')
+                    // console.log('b')
                     let tmp = answers;
-                    console.log(tmp)
+                    // console.log(tmp)
 
                     apiget.fetchAnswersOfQuestion(question.id_question).then(result => {
                         tmp.push(result)
@@ -140,8 +132,16 @@ export default function CreateQuizz() {
     }, [idxPage, questions]);
 
     useEffect(() => {
+        if(quizz){
+            // console.log(quizz)
+        }
     }, [quizz, isSaved, next])
 
+    useEffect(()=>{
+        if(answers && idxPage>0){
+            // console.log(answers[idxPage-1])
+        }
+    }, [idxPage])
     return (
         <div id='createQuizz-container'>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import config from '../config';
@@ -20,12 +20,12 @@ export default function Play() {
     const [score, setScore] = useState(0);
     const [scoreDB, setScoreDB] = useState(undefined);
 
+    const [chronoTermine, setChronoTermine] = useState(false);
+    const [second, setSecond] = useState(15);
 
     /* flag to make it impossible to answer the same Q several times */
     const [answered, setAnswered] = useState(false);
-    const [chronoTermine, setChronoTermine] = useState(false);
-    const [sec, setSecond] = useState(5);
-    
+       
 
     async function fetchQuizz() {
         await axios.get(`http://${config.server}/quizzes/${id_quizz}`)
@@ -61,7 +61,7 @@ export default function Play() {
     }
 
     useEffect(() => {
-        //apiget.fetchScoreByQuizzAndUser(id_user, id_quizz).then(res => setScoreDB(res));
+        //setScoreDB(apiget.fetchScoreByQuizzAndUser(id_user, id_quizz)));
         fetchQuizz();
         fetchQuestions();
     }, [])
@@ -74,25 +74,61 @@ export default function Play() {
         if (currentQuestion) fetchCurrentAnswers();
     }, [currentQuestion]);
 
-    useEffect(() => {
-    }, [chronoTermine]);
+    
+    useInterval(() => {
+        if(second > 1){
+            if(!chronoTermine){
+                setSecond(second - 1)
+            }
+        }
+        else{
+            if(!chronoTermine){
+                setSecond('Terminé');
+                let a = {'correct' : false};
+                handleAnswer(a);
+            }
+        }
+    }, 1000)
 
-    function handleAnswer(answer) {
-        if (!answered && chronoTermine === false) {
-            console.log(sec)
-            setAnswered(true);
-            setChronoTermine(true);
+    function useInterval(callback, delay) {
+        const savedCallback = useRef();
+
+        // Remember the latest function.
+        useEffect(() => {
+            savedCallback.current = callback;
+        }, [callback]);
+
+        // Set up the interval.
+        useEffect(() => {
+            function tick() {
+                savedCallback.current();
+            }
+            if (delay !== null) {
+                let id = setInterval(tick, delay);
+                return () => clearInterval(id);
+            }
+        }, [delay]);
+    }
+
+    function handleAnswer(answer){
+        setChronoTermine(true);
+        if (!answered) {
             /* Checking if the user has answered correctly */
             if (answer.correct) {
                 setScore(parseInt(score) + 10);
-                document.querySelector('#good').style.visibility = 'visible';
+                document.querySelector('#feedback').innerHTML = 'Bonne réponse !';
+                
             } else {
                 setScore(parseInt(score) - quizz.difficulty * 2)
-                document.querySelector('#bad').style.visibility = 'visible';
+                document.querySelector('#feedback').innerHTML = 'Mauvaise réponse !';
             }
+
+            document.querySelector('#feedback').style.visibility = 'visible';
+
             for (const i of document.querySelectorAll('.material-icons')) {
                 i.style.visibility = 'visible';
             }
+            setAnswered(true);
 
             /* Checking if the quizz is over */
             if (currentidx < questions.length - 1){
@@ -103,45 +139,21 @@ export default function Play() {
                 document.querySelector('#finish-button').style.visibility = 'visible';
             }
         }
+
     }
 
     function handleNext() {
-        console.log(answered)
-        console.log(chronoTermine)
         for (const i of document.querySelectorAll('.material-icons')) {
             i.style.visibility = 'hidden';
         }
         document.querySelector('#next-button').style.visibility = 'hidden';
-        document.querySelector('#good').style.visibility = 'hidden';
-        document.querySelector('#bad').style.visibility = 'hidden';
+        document.querySelector('#feedback').style.visibility = 'hidden';
         setCurrentidx(parseInt(currentidx) + 1);
         setAnswered(false);
         setChronoTermine(false);
-        setSecond(5);
+        setSecond(15);
     }
-
-    
-    let second = sec;
-    if(!chronoTermine){
-        //décompte
-        var countdown = setInterval(() => {
-            if(second > 0){
-                second--;
-                setSecond(second)
-            }
-            else{
-                console.log("Stop interval")
-                clearInterval(countdown);
-            } 
-        }, 1000)
-    }
-    else{
-        //On arrête le décompte
-        console.log('Ca tourne plus');
-        //clearInterval(countdown);
-    }
-    
-        
+  
     return (
 
         <div id='play-container'>
@@ -158,7 +170,7 @@ export default function Play() {
             </div>
 
             <div id='chrono'>
-                {sec === 0 ? 'Terminé !' : 'Temps restant : ' + sec}
+                Temps restant : {second}
             </div>
 
             <div id='answers'>
@@ -188,11 +200,7 @@ export default function Play() {
             </div>
 
             <div>
-                <p id='good'>Bonne réponse !</p>
-            </div>
-
-            <div>
-                <p id='bad'>Mauvaise réponse !</p>
+                <p id='feedback'></p>
             </div>
 
             <div>

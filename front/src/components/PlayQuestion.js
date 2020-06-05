@@ -10,7 +10,7 @@ export default function PlayQuestion(props){
                         id='player' 
                         controls={true}
                         volume={0.5}
-                        wrapper='question'
+                        wrapper='div'
                         url={`http://${config.server}/video/${props.src}`}/> : ''}
             <h2>{props.question}</h2>
         </div>

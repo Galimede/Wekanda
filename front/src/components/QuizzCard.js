@@ -48,7 +48,7 @@ export default function QuizzCard(props) {
                 id='quizz-card-card'
                 actions={[
                     <a key="1" href={`/quizz/${props.quizz.id_quizz}/play`}>Jouer</a>,
-                    <a key="2" href={`/quizz/${props.quizz.id_quizz}/edit`}>Modifier</a>,
+                    <a key="2" href={`/edit/${props.quizz.id_quizz}`}>Modifier</a>,
                     <Modal key='3' header={props.quizz.title} trigger={trigger}>
                         <p>{displayDiff(props.quizz.difficulty)}</p>
                         <p>Meilleur score : {scoreMax.maxi ? scoreMax.maxi : 'Pas encore de score !'}</p>

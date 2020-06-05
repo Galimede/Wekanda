@@ -4,7 +4,7 @@ import axios from 'axios';
 import config from '../config';
 import { Icon, Button, CardPanel} from 'react-materialize';
 import { Redirect } from 'react-router-dom';
-import PlayQuestion from './PlayQuestion';
+import ReactPlayer from 'react-player';
 import './css/play.css';
 import * as apiget from '../APIcalls/APIget';
 
@@ -153,6 +153,24 @@ export default function Play() {
         setChronoTermine(false);
         setSecond(15);
     }
+
+    function displayQuestion(q) {
+        console.log(q)
+        
+        return (
+            <div id='question'>
+                {q.path_file !== '' ?
+                    <ReactPlayer
+                        id='player'
+                        controls={true}
+                        volume={0.5}
+                        wrapper='question'
+                        url={`http://${config.server}/video/${q.path_file}`} /> : ''}
+                <h2>{q.question}</h2>
+            </div>
+        )
+        
+    }
   
     return (
 
@@ -163,10 +181,10 @@ export default function Play() {
                 <h2>{quizz ? quizz.title : "Quizz not found"}</h2>
             </div>
 
-            {currentQuestion ? <PlayQuestion question={currentQuestion.question} src={currentQuestion.path_file} /> : ''}
+            {currentQuestion ? displayQuestion(currentQuestion) : ''}
 
             <div id='score'>
-                <h2>Score : {score ? score : 0}</h2>
+                <h2>Score : {score}</h2>
             </div>
 
             <div id='chrono'>

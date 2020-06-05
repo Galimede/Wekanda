@@ -26,47 +26,48 @@ export default function AddQuestion(props) {
             id_question: question && question.id_question ? question.id_question : ''
         }
         let a = [];
-        if(t.answer0.value != ''){
+        if(t.answer0.value != '' ||  t.path_file0.value != ''){
             console.log(t.answer0.value);
             a.push({ 
                 answer: t.answer0.value, 
-                correct: t.correct0.value, 
+                correct: t.correct0.checked, 
                 path_file: t.path_file0.value, 
                 id_answer: answers && answers[0] ? answers[0].id_answer : '',
                 id_question: question && question.id_question ? question.id_question : '',
                 file: t.file0.files[0] ?  t.file0.files[0] : ''
             })
         }
-        if(t.answer1.value != ''){
+        if(t.answer1.value != '' ||  t.path_file1.value != ''){
             a.push({ 
                 answer: t.answer1.value, 
-                correct: t.correct1.value, 
+                correct: t.correct1.checked, 
                 path_file: t.path_file1.value, 
                 id_answer: answers && answers[1] ? answers[1].id_answer : '',
                 id_question: question && question.id_question ? question.id_question : '',
                 file: t.file1.files[0] ?  t.file1.files[0] : ''
             });
         }
-        if(t.answer2.value != ''){
+        if(t.answer2.value != '' ||  t.path_file2.value != ''){
             a.push({ 
                 answer: t.answer2.value, 
-                correct: t.correct2.value, 
+                correct: t.correct2.checked, 
                 path_file: t.path_file2.value, 
                 id_answer: answers && answers[2] ? answers[2].id_answer : '',
                 id_question: question && question.id_question ? question.id_question : '',
                 file: t.file2.files[0] ?  t.file2.files[0] : ''
             });
         }
-        if(t.answer3.value != ''){
+        if(t.answer3.value != '' ||  t.path_file3.value != ''){
             a.push({ 
                 answer: t.answer3.value, 
-                correct: t.correct3.value, 
+                correct: t.correct3.checked, 
                 path_file: t.path_file3.value, 
                 id_answer: answers && answers[3] ? answers[3].id_answer : '',
                 id_question: question && question.id_question ? question.id_question : '',
                 file: t.file3.files[0] ?  t.file3.files[0] : ''
             });
         }
+        console.log(a)
         props.onSubmitQuestion(q, a);
     }
 

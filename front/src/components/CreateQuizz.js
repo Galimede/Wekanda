@@ -39,7 +39,7 @@ export default function CreateQuizz() {
         // console.log(a)
         tmp[idxPage - 1] = a;
         setAnswers(tmp);
-        // console.log(answers)
+        // console.log(a)
         setIsSaved(true);
     }
 

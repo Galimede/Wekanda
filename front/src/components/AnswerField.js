@@ -12,6 +12,9 @@ export default function AnswerField(props) {
     useEffect(()=>{
         if(props.answer){
             setAnswer(props.answer);
+            console.log(typeof answer.correct)
+            console.log(answer.correct)
+            
         }
     }, [props.answer, answer])
 
@@ -22,7 +25,7 @@ export default function AnswerField(props) {
                 placeholder={props.placeholder ? props.placeholder : ''}
                 type="text" className="validate itest" id={props.id ? 'answer'+props.id : ''} />
 
-            <input id={'correct'+props.id} type='checkbox' onChange={e => { props.onChange() }} checked={answer.correct === true ? 'checked' : ''}/>
+            <input id={'correct'+props.id} type='checkbox' onChange={e => { props.onChange() }} checked={answer.correct == true ? true : false}/>
 
             <div className="input-field inline">
                 <div className="file-field input-field">

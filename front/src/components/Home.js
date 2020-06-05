@@ -44,19 +44,21 @@ export default function Home() {
     function renderEachQuizz(quizzes) {
         return quizzes.map(function (q, index){
             return (
-            <li className={'card_quizz'} key={index}>
-                <QuizzCard width={500} key={index} quizz={q} />
+            <li className='card_quizz' key={index}>
+                <QuizzCard key={index} quizz={q} />
             </li>)
         });
     }
 
 
     return (
-        <div id='container'>
+        <div id='home-container'>
             {tagsQuizzes ? tagsQuizzes.map((tq, index) =>
-                <div className={"tq_tag"} key={index}>
+                <div className="tq_tag" key={index}>
                     <h1>{tq.tag}</h1>
-                    <ul className='cards'>{renderEachQuizz(tq.quizzes)}</ul>
+                    <ul className='cards'>
+                        {renderEachQuizz(tq.quizzes)}
+                    </ul>
                 </div>)
             : 'no quizz found'}
         </div>

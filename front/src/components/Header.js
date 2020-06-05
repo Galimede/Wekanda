@@ -4,7 +4,7 @@ import './css/header.css';
 import 'materialize-css';
 import config from '../config';
 import axios from "axios";
-import { Dropdown, Icon } from 'react-materialize';
+import { Dropdown, Icon, Navbar } from 'react-materialize';
 
 export default function Header() {
 
@@ -33,19 +33,18 @@ export default function Header() {
             <nav>
                 <div className="nav-wrapper grey darken-4">
 
-
-
                     <a href="/home" className="brand-logo center">Wekanda</a>
 
                     <ul className="right hide-on-med-and-down">
                         <li>
                             <form>
-                                <div className="input-field">
-                                    <input id="search" type="search" required />
-                                    <label className="label-icon" htmlFor="search"><i
-                                        className="material-icons">search</i></label>
-                                    <i className="material-icons">close</i>
-                                </div>
+                                <Navbar
+                                    alignLinks="right"
+                                    className="grey darken-4"
+                                    id="mobile-nav"
+                                    menuIcon={<Icon>menu</Icon>}
+                                    search
+                                />
                             </form>
                         </li>
                         <li>
@@ -53,17 +52,7 @@ export default function Header() {
                                 id="dropdown-filter"
                                 options={{
                                     alignment: 'right',
-                                    autoTrigger: false,
-                                    closeOnClick: false,
-                                    constrainWidth: false,
-                                    container: null,
-                                    coverTrigger: true,
-                                    hover: true,
                                     inDuration: 150,
-                                    onCloseEnd: null,
-                                    onCloseStart: null,
-                                    onOpenEnd: null,
-                                    onOpenStart: null,
                                     outDuration: 250
                                 }}
                                 trigger={<a node="button"><Icon>tune</Icon></a>}
@@ -72,7 +61,7 @@ export default function Header() {
                             </Dropdown>
                         </li>
 
-                        <li><a href="#"><i className="material-icons">person_outline</i></a></li>
+                        <li><a href="#"><Icon>person_outline</Icon></a></li>
                     </ul>
                 </div>
             </nav>

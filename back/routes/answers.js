@@ -24,7 +24,7 @@ router
     })
 
     .post('/',
-        upload.single('fileAnswer'), async (req, res) => {
+        upload.single('file'), async (req, res) => {
 
             await pool.query('INSERT INTO answers(id_question, answer, correct, path_file) VALUES($1, $2, $3, $4)',
                 [req.body.id_question, req.body.answer, req.body.correct, req.body.path_file]);
@@ -42,16 +42,25 @@ router
         res.json(result.rows[0]);
     })
     .patch('/:id',
-        upload.single('fileAnswer'), async (req, res) => {
+        upload.single('file'), async (req, res) => {
             let result = undefined;
           
-            console.log(req.body.answer)
+            // console.log(req.body.path_file)
+
+            if (req.body.path_file && (req.body.path_file.includes('.jpg') || req.body.path_file.includes('.jpeg') )){
+                result = await pool.query('UPDATE answers SET path_file=$1 WHERE id_answer=$2', [req.body.path_file, req.params.id])
+                if (result.rowCount === 0) {
+                    return res.status(404).send({
+                        error: "Answer not found for this id"
+                    });
+                }
+            }
 
             if (typeof req.body.answer !== "undefined") {
                 if (typeof req.body.answer !== "string" ) { // check for syntax error
                     return res.status(403).send("Wrong type for the answer");
                 } 
-                if(req.body.answer === "")  // check for empty string
+                if(req.body.answer === "" && req.body.path_file === "")  // check for empty string
                 return res.status(400).send({error:"Syntax error"});
                 result = await pool.query('UPDATE answers SET answer=$1 WHERE id_answer=$2', [req.body.answer, req.params.id]);
                 if (result.rowCount === 0) {

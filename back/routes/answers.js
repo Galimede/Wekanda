@@ -45,6 +45,7 @@ router
         upload.single('fileAnswer'), async (req, res) => {
             let result = undefined;
           
+            console.log(req.body.answer)
 
             if (typeof req.body.answer !== "undefined") {
                 if (typeof req.body.answer !== "string" ) { // check for syntax error
@@ -61,8 +62,8 @@ router
             }
 
             if (typeof req.body.correct !== "undefined") {
-                if (typeof req.body.correct !== "boolean")
-                    return res.status(403).send("Wrong type for the correct option"); 
+                if (req.body.correct != "true" && req.body.correct != "false" )
+                    return res.status(403).send("Wrong type for the correct option : "+req.body.correct); 
                 result = await pool.query('UPDATE answers SET correct=$1 WHERE id_answer=$2', [req.body.correct, req.params.id]);
                 if (result.rowCount === 0) {
                     return res.status(404).send({

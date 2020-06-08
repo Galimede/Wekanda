@@ -25,7 +25,7 @@ export default function CreateQuizz() {
 
 
     let onSubmitQuizz = (q) => {
-        if (quizz.id_quizz) {
+        if (quizz && quizz.id_quizz) {
             q.id_quizz = quizz.id_quizz;
         }
         setQuizz(q);
@@ -103,15 +103,12 @@ export default function CreateQuizz() {
                 let i = 0;
                 let tmp = [];
                 for (const question of res) {
-                    console.log(i)
                     tmp = answers;
-                    
                     apiget.fetchAnswersOfQuestion(question.id_question).then(result => {
                         // tmp.push(result)
                         tmp[i] = result;
                         setAnswers(tmp);
                         i++;
-
                     });
                     
                 }

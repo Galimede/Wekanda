@@ -23,11 +23,11 @@ export default function AddQuestion(props) {
             question: t.question.value,
             path_file: t.path_file.value,
             id_quizz: question && question.id_quizz ? question.id_quizz : '',
-            id_question: question && question.id_question ? question.id_question : ''
+            id_question: question && question.id_question ? question.id_question : '',
+            file: t.file.files[0] ? t.file.files[0] : ''
         }
         let a = [];
         if(t.answer0.value != '' ||  t.path_file0.value != ''){
-            console.log(t.answer0.value);
             a.push({ 
                 answer: t.answer0.value, 
                 correct: t.correct0.checked, 
@@ -67,7 +67,6 @@ export default function AddQuestion(props) {
                 file: t.file3.files[0] ?  t.file3.files[0] : ''
             });
         }
-        console.log(a)
         props.onSubmitQuestion(q, a);
     }
 
@@ -76,12 +75,13 @@ export default function AddQuestion(props) {
             setQuestion(props.question);
         }
         if(props.answers){
-            // console.log(props.answers)
             setAnswers(props.answers);
         }
     }, [props.question, props.answers])
 
+    useEffect(()=>{
 
+    },[question,answers]);
 
     return (
         <div id="add-questions-container">
@@ -96,7 +96,7 @@ export default function AddQuestion(props) {
                 <div className="col s12">
                     <label htmlFor='question'>Question</label>
                     <input id='question' onChange={e => { props.onChange() }} defaultValue={question ? question.question : ''} placeholder={'Quelle est la difference entre un hibou et une corde ?'} type="text" className="validate itest" />
-                    {question && question.path_file && question.path_file.includes('.jpg') ? <img src={question.path_file} /> : ''}
+                    {question && question.path_file && (question.path_file.includes('.jpeg') || question.path_file.includes('.jpg')) ? <img src={`http://${config.server}/img/${question.path_file}`} /> : ''}
                     {question && question.path_file && question.path_file.includes('.mp4') ? <ReactPlayer
                         id='player'
                         controls={true}
@@ -109,10 +109,10 @@ export default function AddQuestion(props) {
                     <div className="file-field input-field">
                         <div className="btn">
                             <span>File</span>
-                            <input id='path_file' type='file' />
+                            <input onChange={e => { props.onChange() }} id='file' type='file' />
                         </div>
                         <div className="file-path-wrapper">
-                            <input onChange={e => { props.onChange() }} id="fileName" className="file-path validate" type="text" defaultValue={question && question.path_file ? question.path_file : ''} />
+                            <input onChange={e => { props.onChange() }} id="path_file" className="file-path validate" type="text" defaultValue={question && question.path_file ? question.path_file : ''} />
                         </div>
                     </div>
                 </div>

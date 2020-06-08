@@ -12,9 +12,11 @@ export default function AnswerField(props) {
     useEffect(()=>{
         if(props.answer){
             setAnswer(props.answer);
-            console.log(typeof answer.correct)
-            console.log(answer.correct)
-            
+            console.log(answer)
+        }
+            console.log('load answer components')
+        if(answer != {}){
+            console.log(answer)
         }
     }, [props.answer, answer])
 

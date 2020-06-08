@@ -36,10 +36,8 @@ export default function CreateQuizz() {
         tmp[idxPage - 1] = q;
         setQuestions(tmp);
         tmp = answers;
-        // console.log(a)
         tmp[idxPage - 1] = a;
         setAnswers(tmp);
-        // console.log(a)
         setIsSaved(true);
     }
 
@@ -102,18 +100,20 @@ export default function CreateQuizz() {
             apiget.fetchQuizz(id_quizz).then(res => { setQuizz(res); });
             apiget.fetchQuestionsOfQuizz(id_quizz).then(res => {
                 setQuestions(res);
-                // console.log(res);
-                // console.log('a')
+                let i = 0;
+                let tmp = [];
                 for (const question of res) {
-                    // console.log('b')
-                    let tmp = answers;
-                    // console.log(tmp)
-
+                    console.log(i)
+                    tmp = answers;
+                    
                     apiget.fetchAnswersOfQuestion(question.id_question).then(result => {
-                        tmp.push(result)
-                        setAnswers(tmp)
+                        // tmp.push(result)
+                        tmp[i] = result;
+                        setAnswers(tmp);
+                        i++;
 
                     });
+                    
                 }
             });
 
@@ -132,16 +132,18 @@ export default function CreateQuizz() {
     }, [idxPage, questions]);
 
     useEffect(() => {
-        if(quizz){
-            // console.log(quizz)
-        }
-    }, [quizz, isSaved, next])
+        
+    }, [quizz, isSaved, next]);
 
     useEffect(()=>{
-        if(answers && idxPage>0){
-            // console.log(answers[idxPage-1])
+        if(answers){
+            console.log(questions)
         }
-    }, [idxPage])
+        if(answers){
+            console.log(answers)
+        }
+        
+    }, [answers, questions])
     return (
         <div id='createQuizz-container'>
 

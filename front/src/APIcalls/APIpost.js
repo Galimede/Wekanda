@@ -15,7 +15,7 @@ export async function sendQuizz(q) {
         bodyFormData.append('file', q.file);
     }
     const res = await axios.post(`http://${config.server}/quizzes/`, bodyFormData);
-    return(res.data.id_quizz);
+    return(res.data);
 }
 
 export async function sendQuestion(q) {
@@ -26,7 +26,8 @@ export async function sendQuestion(q) {
     if (q.file){
         bodyFormData.append('file', q.file);
     }
-    await axios.post(`http://${config.server}/questions`, bodyFormData);
+    const res = await axios.post(`http://${config.server}/questions`, bodyFormData);
+    return res.data;
 }
 
 export async function sendAnswer(a) {
@@ -34,8 +35,12 @@ export async function sendAnswer(a) {
     bodyFormData.set('path_file', a.path_file);
     bodyFormData.set('answer', a.answer);
     bodyFormData.set('correct', a.correct);
+    bodyFormData.set('id_question', a.id_question);
     if (a.file){
         bodyFormData.append('file', a.file);
+    }
+    for (var pair of bodyFormData.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
     }
     await axios.post(`http://${config.server}/answers`, bodyFormData);
 }

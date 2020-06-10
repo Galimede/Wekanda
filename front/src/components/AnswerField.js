@@ -2,28 +2,41 @@ import React, {useEffect, useState} from 'react';
 
 export default function AnswerField(props) {
 
-    const [answer, setAnswer] = useState({});
+    const [answer, setAnswer] = useState({
+        answer: '',
+        correct: false,
+        path_file: '',
+    });
+    const [a, setA] = useState('')
 
-    function onChange(){
 
+    function handleAnswerField(e){
+        let value = e.target.value;
+        setA(value);
         props.onChange();
     }
 
     useEffect(()=>{
         if(props.answer){
             setAnswer(props.answer);
-            console.log(answer)
+            setA(props.answer.answer);
+        }else{
+            setAnswer({
+                answer: '',
+                correct: false,
+                path_file: '',
+            })
         }
-            console.log('load answer components')
-        if(answer != {}){
-            console.log(answer)
-        }
-    }, [props.answer, answer])
+    }, [])
 
+    useEffect(()=>{
+        // if(answer){console.log('change answer')
+        // console.log(answer)}
+    },[answer.answer, a])
     return (
         <>
-            <input onChange={e => { props.onChange() }}
-                defaultValue={answer.answer ? answer.answer : ''}
+            <input onChange={e => { handleAnswerField(e) }}
+                value={a}
                 placeholder={props.placeholder ? props.placeholder : ''}
                 type="text" className="validate itest" id={props.id ? 'answer'+props.id : ''} />
 

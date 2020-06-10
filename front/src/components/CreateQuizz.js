@@ -42,21 +42,39 @@ export default function CreateQuizz() {
     }
 
     function sendDatas(event) {
+        console.log('on send')
+        // console.log(quizz);
+        // console.log(questions)
         event.preventDefault();
         if (id_creator) {
+            let idkiz;
+            let idkestion;
             quizz.id_creator = id_creator;
-            setIdQuizzCreated(apipost.sendQuizz(quizz));
-
-            for (const question of questions) {
-                question.id_quizz = idQuizzCreated;
-                apipost.sendQuestion(question);
-            }
-
-            // for (const answer of answers) {
-            // answer.id_question = 
-            //     apipost.sendAnswer(answer);
-            // }
-
+            apipost.sendQuizz(quizz).then(res => {
+                setIdQuizzCreated(res[0].id_quizz)
+                idkiz = res[0].id_quizz;
+                // console.log(res[0].id_quizz)
+                // console.log(idkiz)
+                let i =0;
+                for (const question of questions) {
+                
+                    question.id_quizz = idkiz;
+                    apipost.sendQuestion(question).then(res => {
+                        idkestion = res[0].id_question;
+                        // console.log(idkestion)
+                        // console.log(i);
+                        // console.log(answers)
+                        // console.log(answers[i])
+                        for (const answer of answers[i]) {
+                            answer.id_question = idkestion;
+                            // console.log(answer)
+                            apipost.sendAnswer(answer);
+                        }
+                        i++;
+                    });
+                }
+            });
+            // console.log(idkiz);
         } else {
             apipatch.updateQuizz(quizz);
             for (const question of questions) {
@@ -130,17 +148,29 @@ export default function CreateQuizz() {
 
     useEffect(() => {
         
-    }, [quizz, isSaved, next]);
+    }, [quizz, isSaved, next, answers]);
 
     useEffect(()=>{
         if(answers){
+            console.log('global')
             console.log(questions)
+            console.log('actuel')
+            console.log(questions[idxPage-1])
+            console.log('next')
+            console.log(questions[idxPage])
+            console.log(questions[idxPage - 1] === undefined)
+
         }
         if(answers){
+            console.log(idxPage)
+            console.log('global')
             console.log(answers)
+            console.log('actuel')
+            console.log(answers[idxPage-1])
+            console.log('next')
+            console.log(answers[idxPage])
         }
-        
-    }, [answers, questions])
+    }, [idxPage])
     return (
         <div id='createQuizz-container'>
 
@@ -159,13 +189,8 @@ export default function CreateQuizz() {
                 : ''}
 
             {/* form question preset */}
-            {idxPage > 0 && typeof questions[idxPage - 1] !== undefined ?
-                <AddQuestion answers={answers[idxPage - 1]} question={questions[idxPage - 1]} onSubmitQuestion={(q, a) => onSubmitQuestion(q, a)} onChange={e => onChange()} />
-                : ''}
-
-            {/* form question vierge  */}
-            {idxPage > 0 && typeof questions[idxPage - 1] === undefined ?
-                <AddQuestion onSubmitQuestion={(q, a) => onSubmitQuestion(q, a)} onChange={e => onChange()} />
+            {idxPage > 0 ?
+                <AddQuestion key={idxPage-1} answers={answers && answers[idxPage - 1] ? answers[idxPage - 1] :''} question={questions && questions[idxPage - 1] ? questions[idxPage - 1] : '' } onSubmitQuestion={(q, a) => onSubmitQuestion(q, a)} onChange={e => onChange()} />
                 : ''}
 
             {idxPage > 0 ?
@@ -175,14 +200,23 @@ export default function CreateQuizz() {
                 : ''}
 
             {quizz ?
-                <button className="waves-effect waves-light btn-large" name="action" onClick={event => { setIdxPage(idxPage + 1); setIsSaved(true); }}>
+                <button className="waves-effect waves-light btn-large" name="action" onClick={event => { 
+                        setIdxPage(idxPage + 1); 
+                        setIsSaved(true); 
+                        // if(!answers[idxPage]){
+                        //     answers[idxPage] = [];
+                        // }
+                        // if(!questions[idxPage]){
+                        //     questions[]
+                        // }
+                    }}>
                     <i className="material-icons">
                         {next === true ? 'navigate_next' : 'add'}
                     </i>
                 </button>
                 : ''}
 
-            {questions ?
+            {questions && quizz && Object.keys(questions).length > 0 && Object.keys(quizz).length > 0 ?
                 <button className="waves-effect waves-light btn-large" type="submit" onClick={e => { sendDatas(e) }}>
                     <i className="material-icons">done</i>
                 </button>

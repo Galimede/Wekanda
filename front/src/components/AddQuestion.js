@@ -8,10 +8,6 @@ import './css/addQuestion.css';
 import AnswerField from './AnswerField';
 
 export default function AddQuestion(props) {
-    // const [answer0, setAnswer0] = useState({})
-    // const [answer1, setAnswer1] = useState({})
-    // const [answer2, setAnswer2] = useState({})
-    // const [answer3, setAnswer3] = useState({})
 
     const [answers, setAnswers] = useState([]);
     const [question, setQuestion] = useState({});
@@ -77,11 +73,22 @@ export default function AddQuestion(props) {
         if(props.answers){
             setAnswers(props.answers);
         }
-    }, [props.question, props.answers])
+    }, [props.answers,props.question])
 
     useEffect(()=>{
-
+        if (question){
+            console.log('ques de addq :')
+            console.log(question)
+        }
+        if(answers){
+            console.log('answ de addq :')
+            console.log(answers)
+        }
     },[question,answers]);
+
+    useEffect(()=>{
+        console.log('rerender form ques')
+    },[])
 
     return (
         <div id="add-questions-container">

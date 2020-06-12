@@ -75,20 +75,7 @@ export default function AddQuestion(props) {
         }
     }, [props.answers,props.question])
 
-    useEffect(()=>{
-        if (question){
-            console.log('ques de addq :')
-            console.log(question)
-        }
-        if(answers){
-            console.log('answ de addq :')
-            console.log(answers)
-        }
-    },[question,answers]);
-
-    useEffect(()=>{
-        console.log('rerender form ques')
-    },[])
+    useEffect(()=>{},[question,answers]);
 
     return (
         <div id="add-questions-container">

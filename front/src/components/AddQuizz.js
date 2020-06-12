@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Select, Chip, Icon } from 'react-materialize';
 import './css/addQuizz.css';
 
-
-
-
 export default function AddQuizz(props) {
+    
     const [charsLeft, setCharsLeft] = useState(140);
+    const [tags, setTags] = useState({}); //for autocompletion
+    const [tagsQuizz, setTagsQuizz] = useState([]);
 
     function uniqueName(filename) {
         if (filename) {
             const index = filename.indexOf(".");
             const rootFilename = filename.substr(0, index);
             return rootFilename + Date.now() + filename.substr(index);
-        }
-        else {
+        }else {
             return '';
         }
     }
@@ -29,18 +28,9 @@ export default function AddQuizz(props) {
         };
         if (e.target.file.files[0]){
             res.file = e.target.file.files[0];
-            // console.log(e.target.file.files[0]);
         }
-        // console.log(res)
         props.onSubmitQuizz(res);
         
-
-        // let file;
-        // event.target.file.files[0] ? file = event.target.file.files[0] : file = 0;
-
-        // il faut récupérer les tags mis au quizz
-        //let tags = $('#tags').material_chip('data');
-        // if (fileName) fileName = uniqueName(fileName); else fileName = '';
     }
 
     function handleCounter(e) {
@@ -54,7 +44,33 @@ export default function AddQuizz(props) {
         props.onChange();
     };
 
-    useEffect(() => { }, [charsLeft]);
+    function onChipAdd(e){
+        console.log('tototot')
+    }
+
+    useEffect(() => { 
+        if(tagsQuizz){
+        }
+     }, [charsLeft, tags, tagsQuizz]);
+
+    useEffect(()=>{
+        if(props.tags){
+            let t ={};
+            for (let [key, tag] of Object.entries(props.tags)){
+                t[`${tag.tag}`] = 'null';
+            }
+            setTags(t);
+        }
+        if(props.tagsQuizz){
+            let tq = [];
+            for(let [key, tagQuizz] of Object.entries(props.tagsQuizz)){
+                tq.push({
+                    tag: `${tagQuizz.tag}`
+                });
+            }
+            setTagsQuizz(tq);
+        }
+    }, [props])
     
     return (
         <div id='add-quizz-container'>
@@ -121,19 +137,15 @@ export default function AddQuizz(props) {
                 <div id="div-tags" className="col s12">
                     <div className="input-field inline">
                         <Chip
-                            onChange={e => { props.onChange() }}
+                            onChipAdd={onChipAdd}
                             id="tags"
                             close={false}
                             closeIcon={<Icon className="close">close</Icon>}
                             options={{
-                                //Il faut récupérer les tags ici
+                                data: tagsQuizz,
                                 autocompleteOptions: {
-                                    data: {
-                                        Apple: null,
-                                        Google: null,
-                                        Microsoft: null
-                                    },
-                                    limit: Infinity,
+                                    data: tags,
+                                    limit: 3,
                                     minLength: 3,
                                     onAutocomplete: function noRefCheck() { }
                                 }
@@ -141,11 +153,7 @@ export default function AddQuizz(props) {
                         />
                     </div>
                 </div>
-
-
-
             </form>
-
         </div>
     );
 }

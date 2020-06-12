@@ -13,15 +13,16 @@ export default function CreateQuizz() {
     const { id_quizz } = useParams();
     const id_creator = id_user;
 
-    const [idxPage, setIdxPage] = useState(0);
+    const [idxPage, setIdxPage] = useState(0); // 0 for quizz form, more for question
     const [quizz, setQuizz] = useState();
     const [questions, setQuestions] = useState([]);
-    const [idQuizzCreated, setIdQuizzCreated] = useState();
     const [answers, setAnswers] = useState([]);
-    const [isSaved, setIsSaved] = useState(false);
     const [tags, setTags] = useState([]);
     const [tagsQuizz, setTagsQuizz] = useState([]);
-    const [next, setNext] = useState();
+
+    const [next, setNext] = useState(); //true if next question exist
+    const [isSaved, setIsSaved] = useState(false); //true if data's been saved
+
 
 
     let onSubmitQuizz = (q) => {
@@ -42,39 +43,27 @@ export default function CreateQuizz() {
     }
 
     function sendDatas(event) {
-        console.log('on send')
-        // console.log(quizz);
-        // console.log(questions)
         event.preventDefault();
         if (id_creator) {
             let idkiz;
             let idkestion;
             quizz.id_creator = id_creator;
             apipost.sendQuizz(quizz).then(res => {
-                setIdQuizzCreated(res[0].id_quizz)
+                // setIdQuizzCreated(res[0].id_quizz)
                 idkiz = res[0].id_quizz;
-                // console.log(res[0].id_quizz)
-                // console.log(idkiz)
                 let i =0;
                 for (const question of questions) {
-                
                     question.id_quizz = idkiz;
                     apipost.sendQuestion(question).then(res => {
                         idkestion = res[0].id_question;
-                        // console.log(idkestion)
-                        // console.log(i);
-                        // console.log(answers)
-                        // console.log(answers[i])
                         for (const answer of answers[i]) {
                             answer.id_question = idkestion;
-                            // console.log(answer)
                             apipost.sendAnswer(answer);
                         }
                         i++;
                     });
                 }
             });
-            // console.log(idkiz);
         } else {
             apipatch.updateQuizz(quizz);
             for (const question of questions) {
@@ -84,7 +73,6 @@ export default function CreateQuizz() {
                     apipost.sendQuestion(question);
                 }
             }
-
             for (const a of answers) {
                 for (const answer of a){
                     if (answer.id_question) {
@@ -123,7 +111,6 @@ export default function CreateQuizz() {
                 for (const question of res) {
                     tmp = answers;
                     apiget.fetchAnswersOfQuestion(question.id_question).then(result => {
-                        // tmp.push(result)
                         tmp[i] = result;
                         setAnswers(tmp);
                         i++;
@@ -132,12 +119,12 @@ export default function CreateQuizz() {
                 }
             });
 
-            // apiget.fetchTagsOfQuizz(id_quizz).then(res => {
-            //     setTagsQuizz(res);
-            // });
+            apiget.fetchTagsOfQuizz(id_quizz).then(res => {
+                setTagsQuizz(res);
+            });
             setIsSaved(true);
         }
-        // apiget.fetchAllTags().then(res => setTags(res));
+        apiget.fetchAllTags().then(res => setTags(res));
     }, []);
     useEffect(() => {
         if (questions) {
@@ -146,31 +133,11 @@ export default function CreateQuizz() {
 
     }, [idxPage, questions]);
 
-    useEffect(() => {
-        
-    }, [quizz, isSaved, next, answers]);
+    useEffect(() => {}, [quizz, isSaved, next, answers]);
 
     useEffect(()=>{
-        if(answers){
-            console.log('global')
-            console.log(questions)
-            console.log('actuel')
-            console.log(questions[idxPage-1])
-            console.log('next')
-            console.log(questions[idxPage])
-            console.log(questions[idxPage - 1] === undefined)
+    }, [tags, tagsQuizz])
 
-        }
-        if(answers){
-            console.log(idxPage)
-            console.log('global')
-            console.log(answers)
-            console.log('actuel')
-            console.log(answers[idxPage-1])
-            console.log('next')
-            console.log(answers[idxPage])
-        }
-    }, [idxPage])
     return (
         <div id='createQuizz-container'>
 
@@ -185,7 +152,7 @@ export default function CreateQuizz() {
 
             {/* form quizz preset */}
             {idxPage === 0 && typeof quizz !== {} ?
-                <AddQuizz quizz={quizz} onSubmitQuizz={(q) => onSubmitQuizz(q)} onChange={e => onChange()} />
+                <AddQuizz quizz={quizz} tags={tags} tagsQuizz={tagsQuizz} onSubmitQuizz={(q) => onSubmitQuizz(q)} onChange={e => onChange()} />
                 : ''}
 
             {/* form question preset */}
@@ -203,12 +170,6 @@ export default function CreateQuizz() {
                 <button className="waves-effect waves-light btn-large" name="action" onClick={event => { 
                         setIdxPage(idxPage + 1); 
                         setIsSaved(true); 
-                        // if(!answers[idxPage]){
-                        //     answers[idxPage] = [];
-                        // }
-                        // if(!questions[idxPage]){
-                        //     questions[]
-                        // }
                     }}>
                     <i className="material-icons">
                         {next === true ? 'navigate_next' : 'add'}

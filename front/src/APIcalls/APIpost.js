@@ -39,21 +39,20 @@ export async function sendAnswer(a) {
     if (a.file){
         bodyFormData.append('file', a.file);
     }
-    for (var pair of bodyFormData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
-    }
     await axios.post(`http://${config.server}/answers`, bodyFormData);
 }
 
 export async function sendTagQuizz(t, id) {
-    const bodyFormData = new FormData();
-    bodyFormData.set('id_quizz', id);
-    bodyFormData.set('tag', t);
-
-    await axios.post(`http://${config.server}/tagsquizzes`, bodyFormData);
+    let body = {
+        id_quizz: id,
+        tag: t
+    }
+    await axios.post(`http://${config.server}/tagsquizzes`, body);
 }
 export async function sendNewTag(t) {
-    const bodyFormData = new FormData();
-    bodyFormData.set('tag', t)
-    axios.post(`http://${config.server}/tags`, bodyFormData);
+    let body = {
+        tagname: t
+    }
+    console.log(body)
+    await axios.post(`http://${config.server}/tags`, body);
 }

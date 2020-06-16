@@ -29,7 +29,7 @@ export default function AddQuizz(props) {
         if (e.target.file.files[0]){
             res.file = e.target.file.files[0];
         }
-        props.onSubmitQuizz(res);
+        props.onSubmitQuizz(res, tagsQuizz);
         
     }
 
@@ -43,10 +43,6 @@ export default function AddQuizz(props) {
         setCharsLeft(tmpLeft);
         props.onChange();
     };
-
-    function onChipAdd(e){
-        console.log('tototot')
-    }
 
     useEffect(() => { 
         if(tagsQuizz){
@@ -137,7 +133,6 @@ export default function AddQuizz(props) {
                 <div id="div-tags" className="col s12">
                     <div className="input-field inline">
                         <Chip
-                            onChipAdd={onChipAdd}
                             id="tags"
                             close={false}
                             closeIcon={<Icon className="close">close</Icon>}

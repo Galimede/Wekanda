@@ -45,7 +45,7 @@ CREATE TABLE Tags(
 
 CREATE TABLE TagQuizz(
     id_quizz integer REFERENCES Quizz(id_quizz) ON DELETE CASCADE,
-    tag varchar(15) REFERENCES Tags(tag),
+    tag varchar(15) REFERENCES Tags(tag) ON DELETE CASCADE,
     PRIMARY KEY (id_quizz,tag)
 );
 

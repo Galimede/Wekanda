@@ -13,7 +13,7 @@ export async function updateQuizz(q){
         bodyFormData.append('file', q.file);
     }
     for (var pair of bodyFormData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
+        // console.log(pair[0]+ ', ' + pair[1]); 
     }
     await axios.patch(`http://${config.server}/quizzes/${q.id_quizz}`, bodyFormData);
 }
@@ -42,9 +42,9 @@ export async function updateAnswer(a){
         bodyFormData.append('file', a.file);
     }
     for (var pair of bodyFormData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
+        // console.log(pair[0]+ ', ' + pair[1]); 
     }
-    console.log(`http://${config.server}/answers/${a.id_answer}`)
+    // console.log(`http://${config.server}/answers/${a.id_answer}`)
     await axios.patch(`http://${config.server}/answers/${a.id_answer}`, bodyFormData);
 
 }

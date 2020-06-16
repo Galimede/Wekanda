@@ -10,25 +10,24 @@ router
     })
 
     .get('/:tagname', async (req,res) => {
-        const result = await pool.query('SELECT * FROM tags where tag=$1', [req.params.tagname]);
-        console.log(req.params);
+        const result = await pool.query(`SELECT * FROM tags where tag=$1`, [req.params.tagname]);
         res.json(result.rows);
         res.status(200).end();
     })
 
     .post('/', async (req,res) => {
+        // console.log(req.body)
         const result = await pool.query(
-            'INSERT INTO tags (tag) VALUES ($1)', 
+            `INSERT INTO tags (tag) VALUES ($1)`, 
             [req.body.tagname]);
 
-        res.status(201).end();
+        res.status(201).send(result.rows);
     })
 
     .delete('/:tagname', async (res,req) => {
         const result = await pool.query(
-            'DELETE FROM tags WHERE tag=$1', 
+            `DELETE FROM tags WHERE tag=$1`, 
             [req.params.tagname]);
-
         res.status(204).end();
     });
 module.exports = router;

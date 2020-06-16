@@ -25,10 +25,12 @@ export default function CreateQuizz() {
 
 
 
-    let onSubmitQuizz = (q) => {
+    let onSubmitQuizz = (q, tq) => {
         if (quizz && quizz.id_quizz) {
             q.id_quizz = quizz.id_quizz;
         }
+        console.log(tq)
+        setTagsQuizz(tq)
         setQuizz(q);
         setIsSaved(true);
     }
@@ -49,7 +51,6 @@ export default function CreateQuizz() {
             let idkestion;
             quizz.id_creator = id_creator;
             apipost.sendQuizz(quizz).then(res => {
-                // setIdQuizzCreated(res[0].id_quizz)
                 idkiz = res[0].id_quizz;
                 let i =0;
                 for (const question of questions) {
@@ -64,6 +65,16 @@ export default function CreateQuizz() {
                     });
                 }
             });
+            for (const tagQuizz of tagsQuizz) {
+                console.log(tagQuizz.tag)
+                if(!tags.some(val => val.tag === tagQuizz.tag)){
+                    apipost.sendNewTag(tagQuizz.tag).then(()=>{
+                        apipost.sendTagQuizz(tagQuizz.tag, idkiz)
+                    })
+                }else{
+                    apipost.sendTagQuizz(tagQuizz.tag, idkiz)
+                }
+            }
         } else {
             apipatch.updateQuizz(quizz);
             for (const question of questions) {
@@ -76,24 +87,27 @@ export default function CreateQuizz() {
             for (const a of answers) {
                 for (const answer of a){
                     if (answer.id_question) {
-                        console.log('on patch answer')
+                        // console.log('on patch answer')
                         apipatch.updateAnswer(answer);
                     } else {
-                        console.log('on post answer')
+                        // console.log('on post answer')
                         apipost.sendAnswer(answer);
                     }
                 }
             }
+            for (const tagQuizz of tagsQuizz) {
+                console.log(tagQuizz.tag)
+                if(!tags.some(val => val.tag === tagQuizz.tag)){
+                    apipost.sendNewTag(tagQuizz.tag).then(()=>{
+                        apipost.sendTagQuizz(tagQuizz.tag, id_quizz)
+                    })
+                }else{
+                    apipost.sendTagQuizz(tagQuizz.tag, id_quizz)
+                }
+            }
         }
 
-        // for (const tagQuizz of tagsQuizz) {
-        //     apipost.sendTagQuizz(tagQuizz.tag, idQuizzCreated)
-        //     if(!tags.contains(tagsQuizz.tag)){
-        //         apipost.sendNewTag(tagsQuizz.tag)
-        //     }
-        // }
-
-        // id_creator ? window.location = `/profile/${id_creator}` : window.location = `/`;
+        id_creator ? window.location = `/profile/${id_creator}` : window.location = `/`;
     }
 
     function onChange() {
@@ -147,12 +161,12 @@ export default function CreateQuizz() {
 
             {/* form quizz vierge */}
             {idxPage === 0 && typeof quizz === {} ?
-                <AddQuizz onSubmitQuizz={(q) => onSubmitQuizz(q)} onChange={e => onChange()} />
+                <AddQuizz onSubmitQuizz={(q, tq) => onSubmitQuizz(q, tq)} onChange={e => onChange()} />
                 : ''}
 
             {/* form quizz preset */}
             {idxPage === 0 && typeof quizz !== {} ?
-                <AddQuizz quizz={quizz} tags={tags} tagsQuizz={tagsQuizz} onSubmitQuizz={(q) => onSubmitQuizz(q)} onChange={e => onChange()} />
+                <AddQuizz quizz={quizz} tags={tags} tagsQuizz={tagsQuizz} onSubmitQuizz={(q, tq) => onSubmitQuizz(q, tq)} onChange={e => onChange()} />
                 : ''}
 
             {/* form question preset */}

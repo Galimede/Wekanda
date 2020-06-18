@@ -46,6 +46,7 @@ export default function AddQuizz(props) {
 
     useEffect(() => { 
         if(tagsQuizz){
+            // console.log(tagsQuizz)
         }
      }, [charsLeft, tags, tagsQuizz]);
 
@@ -137,6 +138,9 @@ export default function AddQuizz(props) {
                             close={false}
                             closeIcon={<Icon className="close">close</Icon>}
                             options={{
+                                onChipAdd: (chip)=>{
+                                    setTagsQuizz(chip[0].M_Chips.chipsData)
+                                },
                                 data: tagsQuizz,
                                 autocompleteOptions: {
                                     data: tags,

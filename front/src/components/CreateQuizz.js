@@ -22,7 +22,7 @@ export default function CreateQuizz() {
 
     const [next, setNext] = useState(); //true if next question exist
     const [isSaved, setIsSaved] = useState(false); //true if data's been saved
-
+    // const [sent, setSent] = useState(false);
 
 
     let onSubmitQuizz = (q, tq) => {
@@ -45,6 +45,9 @@ export default function CreateQuizz() {
     }
 
     function sendDatas(event) {
+        console.log(questions)
+        console.log(answers)
+        console.log(tagsQuizz)
         event.preventDefault();
         if (id_creator) {
             let idkiz;
@@ -75,6 +78,7 @@ export default function CreateQuizz() {
                     apipost.sendTagQuizz(tagQuizz.tag, idkiz)
                 }
             }
+            // ;
         } else {
             apipatch.updateQuizz(quizz);
             for (const question of questions) {
@@ -96,18 +100,20 @@ export default function CreateQuizz() {
                 }
             }
             for (const tagQuizz of tagsQuizz) {
-                console.log(tagQuizz.tag)
+                // console.log(tagQuizz.tag)
                 if(!tags.some(val => val.tag === tagQuizz.tag)){
                     apipost.sendNewTag(tagQuizz.tag).then(()=>{
                         apipost.sendTagQuizz(tagQuizz.tag, id_quizz)
                     })
                 }else{
                     apipost.sendTagQuizz(tagQuizz.tag, id_quizz)
+                    // .then(setSent(true))
                 }
             }
+            // ;
         }
 
-        id_creator ? window.location = `/profile/${id_creator}` : window.location = `/`;
+        //  
     }
 
     function onChange() {
@@ -151,6 +157,12 @@ export default function CreateQuizz() {
 
     useEffect(()=>{
     }, [tags, tagsQuizz])
+
+    // useEffect(()=>{
+    //     if(sent){
+    //         id_creator ? window.location = `/profile/${id_creator}`: window.location = `/`;
+    //     }
+    // },[sent])
 
     return (
         <div id='createQuizz-container'>

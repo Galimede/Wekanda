@@ -48,3 +48,11 @@ export async function updateAnswer(a){
     await axios.patch(`http://${config.server}/answers/${a.id_answer}`, bodyFormData);
 
 }
+
+export async function deleteTagQuizz(t, id){
+    let body= {
+        tag: t,
+        id_quizz: id
+    }
+    await axios.delete(`http://${config.server}/tagsquizzes/`, body);
+}

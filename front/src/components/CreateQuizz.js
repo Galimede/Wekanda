@@ -7,13 +7,16 @@ import * as apipatch from '../APIcalls/APIpatch';
 import AddQuizz from './AddQuizz';
 import AddQuestion from './AddQuestion';
 
+import './css/createquizz.css';
+
+
 export default function CreateQuizz() {
 
     const { id_user } = useParams();
     const { id_quizz } = useParams();
     const id_creator = id_user;
 
-    const [idxPage, setIdxPage] = useState(0); // 0 for quizz form, more for question
+    const [idxPage, setIdxPage] = useState(0); // ==0 for quizz form, >0 for question form
     const [quizz, setQuizz] = useState();
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
@@ -110,10 +113,7 @@ export default function CreateQuizz() {
                     // .then(setSent(true))
                 }
             }
-            // ;
         }
-
-        //  
     }
 
     function onChange() {
@@ -187,13 +187,13 @@ export default function CreateQuizz() {
                 : ''}
 
             {idxPage > 0 ?
-                <button className="waves-effect waves-light btn-large" onClick={event => { setIdxPage(idxPage - 1); setIsSaved(true); }} name="action">
+                <button id='button_prev' className="waves-effect waves-light btn-large" onClick={event => { setIdxPage(idxPage - 1); setIsSaved(true); }} name="action">
                     <i className="material-icons">navigate_before</i>
                 </button>
                 : ''}
 
             {quizz ?
-                <button className="waves-effect waves-light btn-large" name="action" onClick={event => { 
+                <button id='button_next' className="waves-effect waves-light btn-large" name="action" onClick={event => { 
                         setIdxPage(idxPage + 1); 
                         setIsSaved(true); 
                     }}>

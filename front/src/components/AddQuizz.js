@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Chip, Icon } from 'react-materialize';
 import './css/addQuizz.css';
+import * as apipatch from '../APIcalls/APIpatch';
 
 export default function AddQuizz(props) {
     
@@ -140,6 +141,13 @@ export default function AddQuizz(props) {
                             options={{
                                 onChipAdd: (chip)=>{
                                     setTagsQuizz(chip[0].M_Chips.chipsData)
+                                },
+                                onChipDelete: (chip)=> {
+                                    console.log(chip.tag)
+                                    // if (props.quizz.id_quizz){
+                                    //     console.log(chip[0])
+                                    //     apipatch.deleteTagQuizz(chip[0].M_Chips.chipsData.tag, props.quizz.id_quizz);
+                                    // }
                                 },
                                 data: tagsQuizz,
                                 autocompleteOptions: {

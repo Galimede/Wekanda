@@ -50,9 +50,5 @@ export async function updateAnswer(a){
 }
 
 export async function deleteTagQuizz(t, id){
-    let body= {
-        tag: t,
-        id_quizz: id
-    }
-    await axios.delete(`http://${config.server}/tagsquizzes/`, body);
+    await axios.delete(`http://${config.server}/tagsquizzes/${t}/${id}`);
 }

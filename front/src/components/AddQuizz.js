@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Select, Chip, Icon } from 'react-materialize';
 import './css/addQuizz.css';
 import * as apipatch from '../APIcalls/APIpatch';
@@ -9,15 +9,17 @@ export default function AddQuizz(props) {
     const [tags, setTags] = useState({}); //for autocompletion
     const [tagsQuizz, setTagsQuizz] = useState([]);
 
-    function uniqueName(filename) {
-        if (filename) {
-            const index = filename.indexOf(".");
-            const rootFilename = filename.substr(0, index);
-            return rootFilename + Date.now() + filename.substr(index);
-        }else {
-            return '';
-        }
+    function usePrevious(val){
+        const ref = useRef();
+
+        useEffect(()=>{
+            ref.current =val;
+        },[val]);
+
+        return ref.current;
     }
+
+    const prevTQ = usePrevious(tagsQuizz);
 
     function onSubmit(e) {
         e.preventDefault();
@@ -46,10 +48,16 @@ export default function AddQuizz(props) {
     };
 
     useEffect(() => { 
-        if(tagsQuizz){
-            // console.log(tagsQuizz)
-        }
+        
      }, [charsLeft, tags, tagsQuizz]);
+    
+    // useEffect(()=>{
+    //     console.log('tq changé')
+    //     if (tagsQuizz){
+    //         console.log(tagsQuizz);
+    //         // console.log(prevTQ);
+    //     }
+    // },[tagsQuizz])
 
     useEffect(()=>{
         if(props.tags){
@@ -142,12 +150,16 @@ export default function AddQuizz(props) {
                                 onChipAdd: (chip)=>{
                                     setTagsQuizz(chip[0].M_Chips.chipsData)
                                 },
-                                onChipDelete: (chip)=> {
-                                    console.log(chip.tag)
-                                    // if (props.quizz.id_quizz){
-                                    //     console.log(chip[0])
-                                    //     apipatch.deleteTagQuizz(chip[0].M_Chips.chipsData.tag, props.quizz.id_quizz);
-                                    // }
+                                onChipDelete: (chip)=>{
+                                    if(props.quizz){
+                                        for(let tq of prevTQ){
+                                            let filt = tagsQuizz.filter(tag => tq.tag == tag.tag);
+                                            if(filt.length === 0){
+                                                apipatch.deleteTagQuizz(tq.tag, props.quizz.id_quizz)
+                                            }
+                                        }
+    
+                                    }
                                 },
                                 data: tagsQuizz,
                                 autocompleteOptions: {

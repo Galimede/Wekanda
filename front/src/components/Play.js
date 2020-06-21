@@ -210,12 +210,12 @@ export default function Play() {
 
         if (chemin && chemin !== '') {
             if (chemin.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-                media = <img src={`http://${config.server}/img/${q.path_file}`} alt={`${q.path_file}`}></img>
+                media = <img className='media' src={`http://${config.server}/img/${q.path_file}`} alt={`${q.path_file}`}></img>
 
             }
             else {
                 media = <ReactPlayer
-                    id='player'
+                    className='media'
                     controls={true}
                     volume={0.5}
                     wrapper='question'

@@ -105,3 +105,7 @@
 button#postScore.btn{
     margin-right: 320px;
 }
+
+.media {
+    width: 500px;
+}

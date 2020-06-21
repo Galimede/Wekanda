@@ -52,19 +52,19 @@ export default function CreateQuizz() {
         console.log(answers)
         console.log(tagsQuizz)
         event.preventDefault();
+        let idquizz;
+        let idquestion;
         if (id_creator) {
-            let idkiz;
-            let idkestion;
             quizz.id_creator = id_creator;
-            apipost.sendQuizz(quizz).then(res => {
-                idkiz = res[0].id_quizz;
+            apipost.sendQuizz(quizz).then(res => {  
+                idquizz = res[0].id_quizz;
                 let i =0;
                 for (const question of questions) {
-                    question.id_quizz = idkiz;
+                    question.id_quizz = idquizz;
                     apipost.sendQuestion(question).then(res => {
-                        idkestion = res[0].id_question;
+                        idquestion = res[0].id_question;
                         for (const answer of answers[i]) {
-                            answer.id_question = idkestion;
+                            answer.id_question = idquestion;
                             apipost.sendAnswer(answer);
                         }
                         i++;
@@ -75,33 +75,45 @@ export default function CreateQuizz() {
                 console.log(tagQuizz.tag)
                 if(!tags.some(val => val.tag === tagQuizz.tag)){
                     apipost.sendNewTag(tagQuizz.tag).then(()=>{
-                        apipost.sendTagQuizz(tagQuizz.tag, idkiz)
+                        apipost.sendTagQuizz(tagQuizz.tag, idquizz)
                     })
                 }else{
-                    apipost.sendTagQuizz(tagQuizz.tag, idkiz)
+                    apipost.sendTagQuizz(tagQuizz.tag, idquizz)
                 }
             }
             // ;
         } else {
             apipatch.updateQuizz(quizz);
-            for (const question of questions) {
+            for (const [i, question] of questions.entries()) {
                 if (question.id_quizz) {
-                    apipatch.updateQuestion(question);
+                    console.log('ca upda')
+                    apipatch.updateQuestion(question).then(()=>{
+                        for (const answer of answers[i]) {
+                            if (answer.id_question) {
+                                apipatch.updateAnswer(answer);
+                            } else {
+                                apipost.sendAnswer(answer);
+                            }
+                        }
+                        console.log(i)
+                    });
                 } else {
-                    apipost.sendQuestion(question);
+                    console.log('ca send')
+                    question.id_quizz = id_quizz;
+                    console.log(question)
+                    console.log(answers[i])
+                    apipost.sendQuestion(question).then(res=>{
+                        idquestion = res[0].id_question;
+                        for (const answer of answers[i]) {
+                            answer.id_question = idquestion;
+                            apipost.sendAnswer(answer);
+                        }
+                        console.log(i)
+
+                    });
                 }
             }
-            for (const a of answers) {
-                for (const answer of a){
-                    if (answer.id_question) {
-                        // console.log('on patch answer')
-                        apipatch.updateAnswer(answer);
-                    } else {
-                        // console.log('on post answer')
-                        apipost.sendAnswer(answer);
-                    }
-                }
-            }
+
             for (const tagQuizz of tagsQuizz) {
                 // console.log(tagQuizz.tag)
                 if(!tags.some(val => val.tag === tagQuizz.tag)){

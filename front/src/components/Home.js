@@ -44,9 +44,9 @@ export default function Home() {
     function renderEachQuizz(quizzes) {
         return quizzes.map(function (q, index) {
             return (
-                <li className={'card_quizz'} key={index}>
-                    <QuizzCard width={500} key={index} quizz={q} />
-                </li>)
+            <li className='card_quizz' key={index}>
+                <QuizzCard key={index} quizz={q} />
+            </li>)
         });
     }
 

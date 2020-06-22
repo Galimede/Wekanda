@@ -3,11 +3,11 @@ import {Link, Redirect} from "react-router-dom";
 import 'materialize-css';
 import config from '../config';
 import axios from "axios";
-import { Dropdown, Icon } from 'react-materialize';
 import { useCookies } from 'react-cookie';
 import { useHistory } from "react-router-dom";
 import SearchQuizz from './SearchQuizz';
 import "./css/header.css";
+import { Dropdown, Icon, Navbar } from 'react-materialize';
 
 export default function Header() {
 
@@ -86,17 +86,7 @@ export default function Header() {
                                 id="dropdown-filter"
                                 options={{
                                     alignment: 'right',
-                                    autoTrigger: false,
-                                    closeOnClick: false,
-                                    constrainWidth: false,
-                                    container: null,
-                                    coverTrigger: true,
-                                    hover: true,
                                     inDuration: 150,
-                                    onCloseEnd: null,
-                                    onCloseStart: null,
-                                    onOpenEnd: null,
-                                    onOpenStart: null,
                                     outDuration: 250
                                 }}
                                 trigger={<a node="button"><Icon>tune</Icon></a>}

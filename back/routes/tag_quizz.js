@@ -21,11 +21,11 @@ router
             const result = await pool.query("INSERT INTO tagQuizz(id_quizz, tag) values($1,$2)", [req.body.id_quizz, req.body.tag]);
             res.status(201).end();
         })
-
-    .delete('/:id_quizz/:tag',
-        async (req, res) => {
-            await pool.query('DELETE FROM tagQuizz WHERE id_quizz=$1 AND tag=$2', [req.params.id_quizz, req.params.tag]);
-            res.status(204).end();
-        });
+    .delete('/:tag/:id', async (req, res)=>{
+        console.log(req.params)
+        await pool.query(
+            `DELETE FROM tagquizz WHERE tag=$1 AND id_quizz=$2`, [req.params.tag, req.params.id]);
+        res.status(204)
+    });
 
 module.exports = router;

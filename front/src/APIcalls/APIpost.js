@@ -15,7 +15,7 @@ export async function sendQuizz(q) {
         bodyFormData.append('file', q.file);
     }
     const res = await axios.post(`http://${config.server}/quizzes/`, bodyFormData);
-    return(res.data.id_quizz);
+    return(res.data);
 }
 
 export async function sendQuestion(q) {
@@ -26,7 +26,8 @@ export async function sendQuestion(q) {
     if (q.file){
         bodyFormData.append('file', q.file);
     }
-    await axios.post(`http://${config.server}/questions`, bodyFormData);
+    const res = await axios.post(`http://${config.server}/questions`, bodyFormData);
+    return res.data;
 }
 
 export async function sendAnswer(a) {
@@ -34,6 +35,7 @@ export async function sendAnswer(a) {
     bodyFormData.set('path_file', a.path_file);
     bodyFormData.set('answer', a.answer);
     bodyFormData.set('correct', a.correct);
+    bodyFormData.set('id_question', a.id_question);
     if (a.file){
         bodyFormData.append('file', a.file);
     }
@@ -41,16 +43,18 @@ export async function sendAnswer(a) {
 }
 
 export async function sendTagQuizz(t, id) {
-    const bodyFormData = new FormData();
-    bodyFormData.set('id_quizz', id);
-    bodyFormData.set('tag', t);
-
-    await axios.post(`http://${config.server}/tagsquizzes`, bodyFormData);
+    let body = {
+        id_quizz: id,
+        tag: t
+    }
+    await axios.post(`http://${config.server}/tagsquizzes`, body);
 }
 export async function sendNewTag(t) {
-    const bodyFormData = new FormData();
-    bodyFormData.set('tag', t)
-    axios.post(`http://${config.server}/tags`, bodyFormData);
+    let body = {
+        tagname: t
+    }
+    console.log(body)
+    await axios.post(`http://${config.server}/tags`, body);
 }
 
 export async function signUp(pseudo,mail,password) {   
@@ -73,4 +77,5 @@ export async function signIn(mail,password) {
         console.error('SignIn Problem');
    });
    return res ? res.data : undefined;
+    
 }

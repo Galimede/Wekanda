@@ -168,7 +168,6 @@ export default function Play() {
             if (answer.correct) {
                 setScore(parseInt(score) + 10);
                 document.querySelector('#feedback').innerHTML = 'Bonne réponse !';
-
             } else {
                 setScore(parseInt(score) - quizz.difficulty * 2)
                 document.querySelector('#feedback').innerHTML = 'Mauvaise réponse !';

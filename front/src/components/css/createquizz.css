@@ -1,0 +1,16 @@
+#createQuizz_container{
+    position: relative;
+}
+
+#button_prev{
+    position: absolute;
+    top:50%;
+    left: 10%;
+}
+
+#button_next{
+    position: absolute;
+    top:50%;
+    right: 10%;
+
+}

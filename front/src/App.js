@@ -25,6 +25,7 @@ function App() {
                 <Route exact={true} path='/' component={Home}/>
                 <Route exact={true} path='/home' component={Home}/>
 
+
                 
                 {/* <Route exact={true} path='/quizz/:id_quizz/edit' component={EditQuizz}/> */}
                 <Route exact={true} path='/addQuizz' component={CreateQuizz}/>
@@ -38,8 +39,6 @@ function App() {
 
                 <Route exact={true} path='/quizzes/:tag' component={FilterQuizz}/>
                 <Route exact={true} path='/quizzes/search/:search' component={SearchQuizz}/>
-
-
 
 
                 <Redirect from='*' to='/' />

@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 import AnserField from './AnswerField';
 
 import config from '../config';
-import './css/addQuestion.css';
+
 import AnswerField from './AnswerField';
 
 export default function AddQuestion(props) {

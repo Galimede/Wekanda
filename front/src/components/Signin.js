@@ -26,7 +26,7 @@ export default function Signin() {
         axios.defaults.headers.common['Authorization'] = (cookie.login ? 'Bearer ' + cookie.login.token : null);
         await axios.get(`http://${config.server}/users/verify_token`, { responseType: 'text'})
         .then(() => redirectBack())
-        .catch();
+        .catch(err => console.log(err));
     }
 
     useEffect(() => {

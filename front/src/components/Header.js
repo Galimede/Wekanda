@@ -107,10 +107,6 @@ export default function Header() {
                                     coverTrigger: true,
                                     hover: true,
                                     inDuration: 150,
-                                    onCloseEnd: null,
-                                    onCloseStart: null,
-                                    onOpenEnd: null,
-                                    onOpenStart: null,
                                     outDuration: 250
                                 }}
                                 trigger={<a node="button"><Icon>person_outline</Icon></a>}

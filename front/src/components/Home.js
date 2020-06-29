@@ -52,6 +52,15 @@ export default function Home() {
 
 
     return (
+        // <div id='home-container'>
+        //     {tagsQuizzes ? tagsQuizzes.map((tq, index) =>
+        //         <div className="tq_tag" key={index}>
+        //             <h1>{tq.tag}</h1>
+        //             <ul className='cards'>
+        //                 {renderEachQuizz(tq.quizzes)}
+        //             </ul>
+        //         </div>)
+        //     : 'no quizz found'}
         <div id='container'>
             {tagsQuizzes ? tagsQuizzes.map((tq, index) => {
                 if (tq.quizzes.length > 0) {

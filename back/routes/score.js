@@ -18,7 +18,6 @@ router
             }
             res.json(result.rows[0]);
         })
-
 .get('/:id_quizz/quizz',
 async (req, res) => {
     const result = await pool.query('SELECT * FROM score WHERE id_quizz=$1', [req.params.id_quizz]);

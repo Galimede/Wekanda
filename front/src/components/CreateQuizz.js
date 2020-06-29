@@ -4,17 +4,23 @@ import * as apipost from '../APIcalls/APIpost';
 import * as apiget from '../APIcalls/APIget';
 import * as apipatch from '../APIcalls/APIpatch';
 
+import { useHistory } from "react-router-dom";
 import AddQuizz from './AddQuizz';
 import AddQuestion from './AddQuestion';
-
+import axios from "axios";
+import config from "../config";
 import './css/createquizz.css';
+import { useCookies } from 'react-cookie';
+
 
 
 export default function CreateQuizz() {
 
-    const { id_user } = useParams();
+
     const { id_quizz } = useParams();
-    const id_creator = id_user;
+
+    const history = useHistory();
+
 
     const [idxPage, setIdxPage] = useState(0); // ==0 for quizz form, >0 for question form
     const [quizz, setQuizz] = useState();
@@ -23,9 +29,36 @@ export default function CreateQuizz() {
     const [tags, setTags] = useState([]);
     const [tagsQuizz, setTagsQuizz] = useState([]);
 
+    const [cookies, setCookie, removeCookie] = useCookies(['login']);
+
+    const [user,setUser] = useState(undefined);
+
+
     const [next, setNext] = useState(); //true if next question exist
     const [isSaved, setIsSaved] = useState(false); //true if data's been saved
     // const [sent, setSent] = useState(false);
+
+
+
+    async function fetchUser() {
+        if (cookies.login) {
+            const res = await axios.get(`http://${config.server}/users/profile`)
+                .then(res => {
+                    setUser(res.data);
+                    return true;
+                })
+                .catch(err => false);
+            if (!res) {
+                setUser('not found');
+                alert("Votre session a expirée");
+                removeCookie('login');
+                history.push('/signin')
+            }
+        } else {
+            alert("Vous n'êtes pas connecté");
+            history.push('/signin');
+        }
+    }
 
 
     let onSubmitQuizz = (q, tq) => {
@@ -54,35 +87,9 @@ export default function CreateQuizz() {
         event.preventDefault();
         let idquizz;
         let idquestion;
-        if (id_creator) {
-            quizz.id_creator = id_creator;
-            apipost.sendQuizz(quizz).then(res => {  
-                idquizz = res[0].id_quizz;
-                let i =0;
-                for (const question of questions) {
-                    question.id_quizz = idquizz;
-                    apipost.sendQuestion(question).then(res => {
-                        idquestion = res[0].id_question;
-                        for (const answer of answers[i]) {
-                            answer.id_question = idquestion;
-                            apipost.sendAnswer(answer);
-                        }
-                        i++;
-                    });
-                }
-            });
-            for (const tagQuizz of tagsQuizz) {
-                console.log(tagQuizz.tag)
-                if(!tags.some(val => val.tag === tagQuizz.tag)){
-                    apipost.sendNewTag(tagQuizz.tag).then(()=>{
-                        apipost.sendTagQuizz(tagQuizz.tag, idquizz)
-                    })
-                }else{
-                    apipost.sendTagQuizz(tagQuizz.tag, idquizz)
-                }
-            }
-            // ;
-        } else {
+
+        if (id_quizz) {
+
             apipatch.updateQuizz(quizz);
             for (const [i, question] of questions.entries()) {
                 if (question.id_quizz) {
@@ -125,7 +132,37 @@ export default function CreateQuizz() {
                     // .then(setSent(true))
                 }
             }
-        }
+        } else {
+            quizz.id_creator = user.id_user;
+            console.log('id_creator',quizz.id_creator,'iid_user',user.id_user);
+            apipost.sendQuizz(quizz).then(res => {  
+                idquizz = res[0].id_quizz;
+                let i =0;
+                for (const question of questions) {
+                    question.id_quizz = idquizz;
+                    apipost.sendQuestion(question).then(res => {
+                        idquestion = res[0].id_question;
+                        for (const answer of answers[i]) {
+                            answer.id_question = idquestion;
+                            apipost.sendAnswer(answer);
+                        }
+                        i++;
+                    });
+                }
+            });
+            for (const tagQuizz of tagsQuizz) {
+                console.log(tagQuizz.tag)
+                if(!tags.some(val => val.tag === tagQuizz.tag)){
+                    apipost.sendNewTag(tagQuizz.tag).then(()=>{
+                        apipost.sendTagQuizz(tagQuizz.tag, idquizz)
+                    })
+                }else{
+                    apipost.sendTagQuizz(tagQuizz.tag, idquizz)
+                }
+            }
+            // ;
+        } 
+
     }
 
     function onChange() {
@@ -134,6 +171,10 @@ export default function CreateQuizz() {
     }
 
     useEffect(() => {
+
+        axios.defaults.headers.common['Authorization'] = (cookies.login ? 'Bearer ' + cookies.login.token : null);
+        fetchUser();
+
         if (id_quizz) {
             apiget.fetchQuizz(id_quizz).then(res => { setQuizz(res); });
             apiget.fetchQuestionsOfQuizz(id_quizz).then(res => {

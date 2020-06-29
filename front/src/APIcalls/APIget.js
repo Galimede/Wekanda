@@ -66,25 +66,26 @@ export async function fetchScoreMax(id) {
     let s;
     await axios.get(`http://${config.server}/scores/${id}/max`)
         .then(res => {
-            s = (res.data);
-        });
+            s = res.data;
+        })
+        .catch(err => console.log(err));
     return s;
 }
 
 export async function fetchScoreByQuizzAndUser(id_user, id_quizz) {
     let s;
-    await axios.get(`http://${config.server}/scores/${id_user}/user/${id_quizz}/quizz`)
+    await axios.get(`http://${config.server}/scores/${id_quizz}/quizz/max`)
         .then(res => {
-            s = (res.data);
+            s = res.data;
         });
     return s;
 }
 
 export async function fetchUser(id) {
-    let j;
+    let s;
     await axios.get(`http://${config.server}/users/${id}`)
         .then(res => {
-            j = (res.data);
+            s = res.data;
         });
-    return j;
+    return s;
 }

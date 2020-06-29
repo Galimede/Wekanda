@@ -1,20 +1,8 @@
 const pool = require('../data/pg.js');
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+const upload = require('../tools/multer_config');
 
-
-let storage = multer.diskStorage(
-    {
-    destination: function (req, file, cb) {
-        cb(null, './public/img');
-    },
-    filename: function (req, file, cb) {
-        cb(null, req.body.path_file);
-    }
-});
-
-let upload = multer({ storage: storage });
 
 router
     .get('/',
@@ -41,11 +29,12 @@ router
     })
 
     .post('/',
-    upload.single('file'), async (req, res) => {
+        upload.single('fileQuestion'), async (req,res) => {
             const result = await pool.query('INSERT INTO questions (id_quizz, question, path_file) VALUES($1, $2, $3) RETURNING id_question',
-                [req.body.id_quizz, req.body.question, '']);
+                [req.body.id_quizz, req.body.question, req.body.path_file]);
             res.status(201).send(result.rows);
-        })
+        }
+    )
 
     .delete('/:id',
         async (req, res) => {
@@ -57,7 +46,7 @@ router
         })
 
     .patch('/:id',
-    upload.single('file'), async (req, res) => {
+    upload.single('fileQuestion'), async (req, res) => {
 
         let result = undefined;
 

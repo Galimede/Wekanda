@@ -1,31 +1,16 @@
 const pool = require('../data/pg.js');
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        console.log(req.file);
-        cb(null, './public/img');
-    },
-    filename: function (req, file, cb) {
-        console.log(req.body.path_file);
-        cb(null, req.body.path_file);
-    }
-});
-
-var upload = multer({
-    storage: storage
-});
+const upload = require('../tools/multer_config');
+const auth = require('../tools/auth')();
 
 router
-
     .get('/',
         async (req, res) => {
             const result = await pool.query('SELECT * FROM quizz');
             res.json(result.rows);
         })
-
+        
     .get('/withtags',
         async (req, res) => {
             const result = await pool.query(
@@ -50,7 +35,25 @@ router
             }
             res.json(result.rows);
         })
+    
+    .get('/fromuser', auth.authenticate(), async (req, res) => {
+            console.log('USER ID : ', req.user.id)
+            const result = await pool.query('SELECT * FROM quizz WHERE id_creator=$1', [req.user.id]);
+            if (result.rows.length === 0) {
+                return res.status(404).send({
+                    error: 'Quizz not found for this user or user does not exist'
+                });
+            }
+            res.json(result.rows);
+    })
 
+    .get('/search/:search', async (req, res) => {
+        let search2 = req.params.search;
+        const result = await pool.query('SELECT * FROM quizz WHERE title ~* $1', [search2]);
+        console.log(result.rows);
+        res.json(result.rows);
+    })    
+    
     .get('/:id', async (req, res) => {
         if (isNaN(+req.params.id)) {
             return res.status(500).send({
@@ -64,16 +67,6 @@ router
             });
         }
         res.json(result.rows[0]);
-    })
-
-    .get('/:id/fromuser', async (req, res) => {
-        const result = await pool.query('SELECT * FROM quizz WHERE id_creator=$1', [req.params.id]);
-        if (result.rows.length === 0) {
-            return res.status(404).send({
-                error: 'Quizz not found for this user or user does not exist'
-            });
-        }
-        res.json(result.rows);
     })
 
     .get('/:id/questions',
@@ -131,7 +124,6 @@ router
                 });
             }
             res.status(204).end();
-
         })
 
     .post('/',

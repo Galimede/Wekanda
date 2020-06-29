@@ -56,3 +56,26 @@ export async function sendNewTag(t) {
     console.log(body)
     await axios.post(`http://${config.server}/tags`, body);
 }
+
+export async function signUp(pseudo,mail,password) {   
+   const res = await axios.post(`http://${config.server}/users/signup`, {
+       pseudo: pseudo,
+       mail:mail,
+       password:password
+   }).catch(() => {
+       console.error('SignUp Problem');
+   });
+   return res !== undefined;
+}
+
+export async function signIn(mail,password) {
+    console.log(mail,password);
+    const res = await axios.post(`http://${config.server}/users/login`, {
+       mail:mail,
+       password:password
+   }).catch(() => {
+        console.error('SignIn Problem');
+   });
+   return res ? res.data : undefined;
+    
+}

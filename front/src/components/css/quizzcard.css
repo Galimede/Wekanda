@@ -26,6 +26,20 @@
     width: 150px;
 }
 
-.modal{
+/*div.card-content>div>*{
+    color: black;
+}*/
+
+#title-quizz-card{
+    font-weight: 900;
+    font-size: large;
+    margin-top: -2px;
+}
+
+div.modal-content>*{
+    color: black
+}
+
+.close-modal{
     color: #333333;
 }

@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import {Link} from "react-router-dom";
-import './css/header.css';
+import {Link, Redirect} from "react-router-dom";
 import 'materialize-css';
 import config from '../config';
 import axios from "axios";
+import { useCookies } from 'react-cookie';
+import { useHistory } from "react-router-dom";
+import SearchQuizz from './SearchQuizz';
+import "./css/header.css";
 import { Dropdown, Icon, Navbar } from 'react-materialize';
 
 export default function Header() {
 
     const [tags, setTags] = useState([]);
+    const [cookie, setCookie, removeCookie] = useCookies(['login']);
+    const history = useHistory();
 
     async function getTags() {
         await axios.get(`http://${config.server}/tags`)
@@ -28,6 +33,36 @@ export default function Header() {
         });
     }
 
+    async function logout(e) {
+        e.preventDefault();
+        removeCookie('login', {path:"/"})
+        history.push('/home');
+    }
+
+    function checkLogin() {
+        if(cookie.login) {
+            return [<a href="#" onClick={logout}>Se déconnecter</a>, <Link to={'/profile'}>Profil</Link>];
+        } else {
+            return [<Link to={'/signin'}>Se connecter</Link>];
+        }
+    }
+
+    function search(event){
+        event.preventDefault();
+        let search = event.target.value;
+        
+        if(!search) return history.push('/home');
+            
+        return history.push(`/quizzes/search/${search}`)
+    }
+
+    function clearSearch(e) {
+        e.preventDefault();
+
+        document.querySelector("#search").value = "";
+        return history.push('/home');
+    }
+
     return (
         <div className="header">
             <nav>
@@ -36,17 +71,16 @@ export default function Header() {
                     <a href="/home" className="brand-logo center">Wekanda</a>
 
                     <ul className="right hide-on-med-and-down">
-                        <li>
-                            <form>
-                                <Navbar
-                                    alignLinks="right"
-                                    className="grey darken-4"
-                                    id="mobile-nav"
-                                    menuIcon={<Icon>menu</Icon>}
-                                    search
-                                />
-                            </form>
-                        </li>
+                    <li>
+                        <form>
+                            <div className="input-field">
+                                <input id="search" type="search" onChange={e => search(e)} required />
+                                    <label className="label-icon" htmlFor="search">
+                                        <i className="material-icons">search</i></label>
+                                    <i className="material-icons" onClick={e => clearSearch(e)}>close</i>
+                            </div>
+                        </form>
+                    </li>
                         <li>
                             <Dropdown
                                 id="dropdown-filter"
@@ -61,7 +95,25 @@ export default function Header() {
                             </Dropdown>
                         </li>
 
-                        <li><a href="#"><Icon>person_outline</Icon></a></li>
+                        <li>
+                        <Dropdown
+                                id="dropdown-login"
+                                options={{
+                                    alignment: 'left',
+                                    autoTrigger: false,
+                                    closeOnClick: false,
+                                    constrainWidth: false,
+                                    container: null,
+                                    coverTrigger: true,
+                                    hover: true,
+                                    inDuration: 150,
+                                    outDuration: 250
+                                }}
+                                trigger={<a node="button"><Icon>person_outline</Icon></a>}
+                            >
+                            {checkLogin()}
+                            </Dropdown>
+                        </li>
                     </ul>
                 </div>
             </nav>

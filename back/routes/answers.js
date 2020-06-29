@@ -1,21 +1,8 @@
 const pool = require('../data/pg.js');
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+const upload = require('../tools/multer_config');
 
-
-let storage = multer.diskStorage(
-    {
-    destination: function (req, file, cb) {
-        cb(null, './public/img');
-    },
-    filename: function (req, file, cb) {
-        cb(null, req.body.path_file);
-    }
-});
-
-
-let upload = multer({ storage: storage });
 
 router
     .get('/', async (req, res) => {
@@ -79,6 +66,10 @@ router
                         error: "Answer not found for this id"
                     });
                 }
+            }
+
+            if (req.body.path_file) {
+                result = await pool.query('UPDATE answers SET path_file=$1 WHERE id_answer=$2', [req.body.path_file, req.params.id]);
             }
             
             if(typeof result === "undefined") {
